@@ -1,0 +1,33 @@
+{
+  "name": "bs",
+  "version": "1.0.0",
+  "description": "View/Model JS Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wollanup/bs.git"
+  },
+  "keywords": [],
+  "author": "Steve Mareigner <steve.mareigner@gmail.com> (http://www.steve-mareigner.fr)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wollanup/bs/issues"
+  },
+  "homepage": "https://github.com/wollanup/bs#readme",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^3.1.0",
+    "handlebars": "^4.0.10",
+    "minifier": "^0.8.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "grunt-babel": "^7.0.0"
+  }
+}
