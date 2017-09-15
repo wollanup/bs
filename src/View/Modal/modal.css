@@ -1,0 +1,35 @@
+.bs-view-modal .modal-icon-wrap {
+	overflow : hidden;
+	position : absolute;
+	top      : 0;
+	bottom   : 0;
+	left     : 0;
+	right    : 0;
+}
+.bs-view-modal .modal-icon {
+	position  : absolute;
+	top       : 0;
+	right     : 15px;
+	font-size : 20em;
+	opacity   : .1;
+}
+.bs-view-modal .view-content {
+	position : relative;
+	z-index  : 1;
+}
+.bs-view-modal .close small {
+	vertical-align : middle;
+}
+.bs-view-modal .modal-body.no-padding {
+	padding : 0
+}
+
+.bs-view-modal .modal-dialog.modal-fullWidth {
+	width: auto;
+	margin: 30px;
+}
+
+@media screen and (max-width : 768px) {
+	.bs-view-modal.modal-dialog.modal-max .view-content
+}
+

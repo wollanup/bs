@@ -1,0 +1,19 @@
+'use strict';
+
+/** @namespace Bs.Storage.Local */
+
+Bs.define('Bs.Storage.Local', {
+	require  : 'Bs.Response',
+	construct: function () {
+		//console.log('Bs.Util.Response');
+		var a = 'truc';
+
+		var Local = function Local() {};
+
+		//alert('yo');
+
+		Local.prototype.a = a;
+
+		return Local;
+	}
+});

@@ -1,0 +1,9 @@
+.bs-view-modal-alert .modal-body {
+	padding : 0;
+}
+.bs-view-modal-alert .alert {
+	padding       : 45px;
+	margin-bottom : 0;
+	border-radius : 0;
+	border        : none;
+}

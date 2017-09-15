@@ -1,0 +1,32 @@
+#toast-container {
+	position       : fixed;
+	bottom         : 15px;
+	right          : 15px;
+	z-index        : 9999999;
+	pointer-events : none;
+}
+#toast-container .toast {
+	margin-top    : 10px;
+	position         : relative;
+	pointer-events   : auto;
+	overflow         : hidden;
+	padding          : 20px 35px 20px 20px;
+	width            : 400px;
+	background-color : #262626;
+	color            : #ccc;
+	border-radius    : 2px;
+	box-shadow       : 0 1px 5px rgba(0, 0, 0, .5);
+}
+#toast-container .toast-dismissible .close {
+	top: -16px;
+	right: -26px;
+	color: #fff;
+	padding: 10px;
+	opacity: .7;
+	text-shadow: initial;
+}
+
+#toast-container .toast-dismissible .close:hover {
+	opacity: 1;
+}
+

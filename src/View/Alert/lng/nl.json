@@ -1,0 +1,26 @@
+{
+  "info": {
+    "title": "Informatie",
+    "msg": {
+      "nothing": "Niets te wijzigen"
+    }
+  },
+  "success": {
+    "title": "Klaar",
+    "msg": {
+      "saved": "Wijziging doorgevoerd",
+      "default": "Met succes uitgevoerd"
+    }
+  },
+  "warning": {
+    "title": "Waarschuwing"
+  },
+  "danger": {
+    "title": "Fout",
+    "msg": {
+      "notSaved": "De wijzigingen konden niet opgeslagen worden",
+      "notFetched": "De server heeft de verwachte gegevens niet teruggestuurd",
+      "default": "Er is een fout opgetreden"
+    }
+  }
+}

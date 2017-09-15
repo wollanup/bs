@@ -1,0 +1,11 @@
+'use strict';
+
+/** @namespace Bs.Router */
+
+Bs.define('Bs.Router', {
+
+	construct: function () {
+
+	}
+
+});
