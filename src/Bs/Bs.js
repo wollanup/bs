@@ -71,7 +71,10 @@
 	 */
 	Bs.setConfig = function (config) {
 		$.extend(_config, config);
-		this.setDebug(_config.debug);
+		Bs.setDebug(_config.debug);
+		if(_config.dev){
+			Bs.setDev(true);
+		}
 	};
 
 	/**
@@ -94,18 +97,44 @@
 		}
 	};
 
-	Bs.requirePackage = function (packages, callback) {
+	/**
+	 *
+	 * @param distPackages
+	 * @param devClasses devClasses or callback
+	 * @param callback
+	 */
+	Bs.requirePackage = function (distPackages, devClasses, callback) {
 		var dfdJs, dfdCss;
-		if (typeof packages === "string") {
-			packages = [packages];
-		}
 		var dfds = [];
+
+		if (typeof devClasses === 'function') {
+			callback = devClasses;
+			devClasses = [];
+		}
+		if (typeof devClasses === 'string') {
+			devClasses = [devClasses];
+		}
+
 		callback = callback || function () {};
+
+		if (Bs.isDev()) {
+			if(devClasses.length){
+				Bs.require(devClasses, callback);
+			}
+			else{
+				callback();
+			}
+			return;
+		}
+
+		if (typeof distPackages === "string") {
+			distPackages = [distPackages];
+		}
 		_async = false;
-		for (var i = 0, aPackage; !!(aPackage = packages[i]); i++) {
+		for (var i = 0, aPackage; !!(aPackage = distPackages[i]); i++) {
 
 			// JS
-			dfdJs = _getScript(_config.urlCore + '/Bs/dist/js/' + aPackage + '.min.js');
+			dfdJs = _getScript(_config.urlDist + '/' + aPackage + '.min.js');
 			(function (packageName) {
 				dfdJs.fail(function (jqXHR, errorType, error) {
 					console.error("Error in \"" + packageName + "\" package JS : " + errorType);
@@ -115,7 +144,7 @@
 			dfds.push(dfdJs);
 
 			// CSS
-			dfdCss = Bs.Stylesheet.load(_config.urlCore + '/Bs/dist/css/' + aPackage + '.min.css');
+			dfdCss = Bs.Stylesheet.load(_config.urlDist + '/' + aPackage + '.min.css');
 			(function (packageName) {
 				dfdCss.fail(function (jqXHR, errorType, error) {
 					console.error("Error in \"" + packageName + "\" package CSS: " + errorType);
@@ -224,7 +253,7 @@
 								_storeLib[oneLib] = true;
 								dfd.notify();
 							})
-							.fail(function(){
+							.fail(function () {
 								throw new Error('[Bs] Required lib ' + oneLib + ' at ' + url + ' not found or error during JS eval.');
 							});
 					})(lib);
@@ -302,7 +331,7 @@
 						if (require && require.length) {
 							for (var j = 0, requiredDependency; requiredDependency = require[j]; j++) {
 								// // Do not add loop references
-								if(!_dependencies.hasOwnProperty(requiredDependency)) {
+								if (!_dependencies.hasOwnProperty(requiredDependency)) {
 									_requireOne(requiredDependency);
 								}
 							}
@@ -398,12 +427,12 @@
 	Bs.getCmp = function (instanceId, successFn, notFoundFn) {
 
 		if (_cmpStore.hasOwnProperty(instanceId)) {
-			successFn = successFn || function(){};
+			successFn = successFn || function () {};
 			successFn.call(_cmpStore[instanceId], _cmpStore[instanceId]);
 			return _cmpStore[instanceId];
 		}
 		else {
-			notFoundFn = notFoundFn || function(){};
+			notFoundFn = notFoundFn || function () {};
 			notFoundFn();
 			return null;
 
@@ -433,7 +462,7 @@
 		return _buildStore(className, definition, alias);
 	};
 
-	Bs.getClass = function(className){
+	Bs.getClass = function (className) {
 		return _store[className];
 	};
 
@@ -443,7 +472,7 @@
 
 	Bs.setDev = function (dev) {
 		console.log(
-			dev ? "%c .:Bs IS RUNNING IN DEV MODE:. " : ' %cMode DEV OFF',
+			dev ? "%c .:Bs DEV MODE:. " : ' %cDEV MODE OFF',
 			(dev ? 'color: #00ff00' : 'color: #ff0000') + ';background: #333;font-size:2em;border:3px solid #00ff00;'
 		);
 		_dev = dev;
@@ -503,7 +532,9 @@
 		api     : 'api',
 		urlCore : '',
 		urlApp  : '',
+		urlDist : '',
 		debug   : false,
+		dev     : false,
 		initLang: true,
 		lang    : {}
 	};
@@ -548,7 +579,6 @@
 	var _initialized = null;
 
 	var _requireProgress = [];
-
 
 	/**
 	 *
@@ -738,7 +768,7 @@
 
 		if (_isDefined(className)) {
 			if (_dev) {
-				console.log("%c" + className + " will be required again in DEV mode", 'color: #883300');
+				console.log("%c" + className + " reloading", 'color: #883300');
 				_dependencies[className] = {
 					dependencies: [],
 					dfdRequire  : new $.Deferred(),
@@ -838,7 +868,6 @@
 			_removeFromQueue(className);
 		}
 
-
 		if (_dependencies.hasOwnProperty(className)) {
 			_dependencies[className].dfdRequire = new $.Deferred();
 			_dependencies[className].dfdDefine = new $.Deferred();
@@ -931,6 +960,5 @@
 	};
 
 	window['Bs'] = Bs;
-	window['_orphans'] = _orphans;
 
 }(jQuery);

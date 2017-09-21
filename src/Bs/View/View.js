@@ -516,6 +516,36 @@ Bs.define('Bs.View', {
 			return this.renderCompiledTpl(compiledTplId, data, callback);
 		};
 
+		View.prototype.getPartial = function (name, ns) {
+			var me = this,
+				dfd = new $.Deferred(),
+				fullName,
+				urlTemplate;
+
+			if (!ns) {
+				ns = me.urlPath;
+			}
+			fullName = ns + '/tpl/' + name;
+
+			if (Handlebars.partials.hasOwnProperty(fullName)) {
+				dfd.resolve();
+			}
+			else {
+				urlTemplate = me.urlRoot + '/' + fullName + '.partial';
+				Bs.Template.loadPartial(urlTemplate, fullName).then(function () {
+					dfd.resolve();
+				});
+			}
+
+			dfd.then(function () {
+				if (!Handlebars.partials[fullName]) {
+					throw Error('Partial "' + fullName + '" Not found');
+				}
+			});
+
+			return dfd;
+		};
+
 		View.prototype.getTpl = function (name, data, ns) {
 			var me = this,
 				dfd = new $.Deferred(),
@@ -524,7 +554,7 @@ Bs.define('Bs.View', {
 				urlTemplate;
 
 			if (!ns) {
-				ns = me.urlPath + '/tpl/';
+				ns = me.urlPath;
 			}
 			fullName = ns + '/tpl/' + name;
 

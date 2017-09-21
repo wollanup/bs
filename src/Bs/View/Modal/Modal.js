@@ -19,6 +19,7 @@ Bs.define('Bs.View.Modal', {
 		view       : "",
 		content    : "",
 		title      : "",
+		subTitle   : "",
 		icon       : "",
 		/**
 		 * Available sizes are "sm" and "lg"
@@ -90,6 +91,7 @@ Bs.define('Bs.View.Modal', {
 		});
 
 		$modal.find('.modal-title-main').html(me.options.title);
+		$modal.find('.modal-title-sub').html(me.options.subTitle);
 		$modal.find('.modal-icon').addClass(me.options.icon);
 		$modal.one('shown.bs.modal', function () {
 			for (var view in me.subViewList) {

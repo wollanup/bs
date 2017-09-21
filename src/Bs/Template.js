@@ -71,6 +71,20 @@ Bs.define('Bs.Template', {
 
 			return dfd;
 		};
+		Template.loadPartial = function (url, tplName, additionalScriptsOnly) {
+			var dfd = new $.Deferred();
+
+			$.get(url)
+				.done(function (tplHtml) {
+					Handlebars.registerPartial(tplName, tplHtml);
+					dfd.resolve();
+				})
+				.fail(function () {
+					console.error('Partial "' + tplName + '" cannot be loaded @ "' + url + '".');
+				});
+
+			return dfd;
+		};
 
 		Template.registerLoadedTemplate = function (tplHtml, viewName, additionalScriptsOnly) {
 			// TODO, use HTMl Parser instead of regex ?
