@@ -895,8 +895,18 @@ this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1
 		_log(className + ' has been required');
 
 		if (_isDefined(className)) {
-			_log(className + ' is already defined');
-			return;
+			if (_dev) {
+				console.log("%c" + className + " reloading", 'color: #883300');
+				_dependencies[className] = {
+					dependencies: [],
+					dfdRequire  : new $.Deferred(),
+					dfdDefine   : new $.Deferred()
+				};
+			}
+			else {
+				_log(className + ' is already defined');
+				return;
+			}
 		}
 
 		if (_isInQueue(className)) {
@@ -6498,7 +6508,7 @@ Bs.define('Bs.View.Collection.Item', {
 	},
 
 	/**
-	 *
+	 * 
 	 * @return {View}
 	 */
 	edit: function () {
