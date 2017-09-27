@@ -767,18 +767,8 @@
 		_log(className + ' has been required');
 
 		if (_isDefined(className)) {
-			if (_dev) {
-				console.log("%c" + className + " reloading", 'color: #883300');
-				_dependencies[className] = {
-					dependencies: [],
-					dfdRequire  : new $.Deferred(),
-					dfdDefine   : new $.Deferred()
-				};
-			}
-			else {
-				_log(className + ' is already defined');
-				return;
-			}
+			_log(className + ' is already defined');
+			return;
 		}
 
 		if (_isInQueue(className)) {
