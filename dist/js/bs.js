@@ -5656,15 +5656,14 @@ Bs.define('Bs.View', {
 		};
 
 		var _loadStylesheet = function () {
-			var me = this,
-				dfd = new $.Deferred(), url;
+			var me = this, url;
 
 			if (me.hasStylesheet) {
 				url = me.urlRoot + '/' + me.cssPath;
 				return Bs.Stylesheet.load(url);
 			}
 			else {
-				return dfd.resolve();
+				return new $.Deferred().resolve();
 			}
 		};
 
@@ -5695,20 +5694,22 @@ Bs.define('Bs.View', {
 				dfd = new $.Deferred();
 
 			if (!view.hasTemplate) {
-				return dfd.resolve();
-			}
-
-			if (Handlebars.templates.hasOwnProperty(tplName)) {
-				view.tpl = Handlebars.templates[tplName];
-				return dfd.resolve();
+				dfd.resolve();
 			}
 			else {
-				urlTemplate = view.urlRoot + '/' + view.templatePath;
-				Bs.Template.load(urlTemplate, view.urlPath + '/' + view.camelName).then(function () {
+				if (Handlebars.templates.hasOwnProperty(tplName)) {
 					view.tpl = Handlebars.templates[tplName];
-					return dfd.resolve();
-				});
+					dfd.resolve();
+				}
+				else {
+					urlTemplate = view.urlRoot + '/' + view.templatePath;
+					Bs.Template.load(urlTemplate, view.urlPath + '/' + view.camelName).then(function () {
+						view.tpl = Handlebars.templates[tplName];
+						dfd.resolve();
+					});
+				}
 			}
+			return dfd;
 		};
 
 		/**
