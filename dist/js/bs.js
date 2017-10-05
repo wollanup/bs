@@ -2377,6 +2377,20 @@ Bs.define('Bs.Collection', {
 		};
 
 		/**
+		 * Sort collection by given property
+		 * Local sorting, use `Collection.fetch({sort:{property:"name",direction:"DESC"}})` for remote sorting
+		 *
+		 * @param {String} property
+		 * @param {Boolean} desc
+		 */
+		Collection.prototype.sortBy = function (property, desc) {
+			var me = this;
+			me.items.sort(function(a,b) {
+				return (a.get(property) > b.get(property)) ? (desc ? -1 : 1) : ((b.get(property) > a.get(property)) ? (desc ? 1 : -1) : 0);
+			});
+		};
+
+		/**
 		 * Define a new Class derived from Collection
 		 *
 		 * @static
