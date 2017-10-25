@@ -2086,7 +2086,7 @@ Bs.define('Bs.Collection', {
 				me.pagination = response.pagination();
 				var list = response.getData();
 				if (list) {
-					if (typeof list === "object")
+					if (typeof list === "object") {
 						for (var i in list) {
 							if (list.hasOwnProperty(i) === false) {
 								continue;
@@ -2100,6 +2100,7 @@ Bs.define('Bs.Collection', {
 								item.setInitialData(list[i]);
 							}
 						}
+					}
 				}
 				originalDoneCallback.call(me, response);
 			};
@@ -2551,10 +2552,20 @@ Bs.define('Bs.DataBinder', {
 					}
 					else {
 						if($el.data('bindAttr')){
-							$this.attr($el.data('bindAttr'), value);
+							if($el.data('bindAttr') === 'class'){
+								$this.toggleClass(value);
+							}
+							else {
+								$this.attr($el.data('bindAttr'), value);
+							}
 						}
 						else {
-							$this.html(value);
+							if($el.data('bindHtml')) {
+								$this.html(value);
+							}
+							else{
+								$this.text(value);
+							}
 						}
 					}
 				});
@@ -6349,6 +6360,7 @@ Bs.define('Bs.View.Collection', {
 		if (me.emptyCollectionTemplate) {
 			me.data.$elEmptyCollection.html(me.emptyCollectionTemplate);
 			me.translate();
+			callback();
 		}
 		else {
 			Bs.require(me.emptyCollectionView, function (emptyCollectionView) {
@@ -6889,16 +6901,26 @@ Bs.define('Bs.View.Alert', {
 Bs.define('Bs.View.Alert.Toast', {
 	extend         : 'Bs.View.Alert',
 	translationPath: 'inherit',
-
+	options:{
+		single: true
+	},
 	initialize: function () {
-		var me = this;
+		var me = this,
+			$body,
+			$container;
 
 		me.callParent('initialize');
-		var $body = $('body');
-		if ($body.find('#toast-container').length === 0) {
-			$body.append('<div id="toast-container"></div>');
+		$body = $('body');
+
+		$container = $body.find('#toast-container');
+		if ($container.length === 0) {
+			$container = $('<div id="toast-container"></div>').appendTo($body);		}
+
+		if(me.options.single){
+			$container.empty();
 		}
-		this.renderTo = $body.find('#toast-container');
+
+		this.renderTo = $container;
 		this.options.autoDismissible = true;
 	}
 
