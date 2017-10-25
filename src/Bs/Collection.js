@@ -322,7 +322,7 @@ Bs.define('Bs.Collection', {
 				me.pagination = response.pagination();
 				var list = response.getData();
 				if (list) {
-					if (typeof list === "object")
+					if (typeof list === "object") {
 						for (var i in list) {
 							if (list.hasOwnProperty(i) === false) {
 								continue;
@@ -336,6 +336,7 @@ Bs.define('Bs.Collection', {
 								item.setInitialData(list[i]);
 							}
 						}
+					}
 				}
 				originalDoneCallback.call(me, response);
 			};

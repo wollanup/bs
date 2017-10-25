@@ -3,16 +3,26 @@
 Bs.define('Bs.View.Alert.Toast', {
 	extend         : 'Bs.View.Alert',
 	translationPath: 'inherit',
-
+	options:{
+		single: true
+	},
 	initialize: function () {
-		var me = this;
+		var me = this,
+			$body,
+			$container;
 
 		me.callParent('initialize');
-		var $body = $('body');
-		if ($body.find('#toast-container').length === 0) {
-			$body.append('<div id="toast-container"></div>');
+		$body = $('body');
+
+		$container = $body.find('#toast-container');
+		if ($container.length === 0) {
+			$container = $('<div id="toast-container"></div>').appendTo($body);		}
+
+		if(me.options.single){
+			$container.empty();
 		}
-		this.renderTo = $body.find('#toast-container');
+
+		this.renderTo = $container;
 		this.options.autoDismissible = true;
 	}
 

@@ -98,10 +98,20 @@ Bs.define('Bs.DataBinder', {
 					}
 					else {
 						if($el.data('bindAttr')){
-							$this.attr($el.data('bindAttr'), value);
+							if($el.data('bindAttr') === 'class'){
+								$this.toggleClass(value);
+							}
+							else {
+								$this.attr($el.data('bindAttr'), value);
+							}
 						}
 						else {
-							$this.html(value);
+							if($el.data('bindHtml')) {
+								$this.html(value);
+							}
+							else{
+								$this.text(value);
+							}
 						}
 					}
 				});

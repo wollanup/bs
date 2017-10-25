@@ -310,6 +310,7 @@ Bs.define('Bs.View.Collection', {
 		if (me.emptyCollectionTemplate) {
 			me.data.$elEmptyCollection.html(me.emptyCollectionTemplate);
 			me.translate();
+			callback();
 		}
 		else {
 			Bs.require(me.emptyCollectionView, function (emptyCollectionView) {
