@@ -110,7 +110,9 @@ Bs.define('Bs.DataBinder', {
 								$this.html(value);
 							}
 							else{
-								$this.text(value);
+								if(value) {
+									$this.text(value);
+								}
 							}
 						}
 					}
