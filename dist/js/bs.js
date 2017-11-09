@@ -6959,7 +6959,7 @@ Bs.define('Bs.View.Alert.Toast', {
 			});
 		}
 		else {
-			return Bs.View.Alert.Toast.error(null, renderTo);
+			return Bs.View.Alert.Toast.error(null);
 		}
 	}
 });
