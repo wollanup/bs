@@ -151,6 +151,10 @@ this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1
 
 	var _async = false;
 
+	/**
+	 *
+	 * @type {Bs}
+	 */
 	var Bs = {};
 
 	/**
@@ -296,6 +300,15 @@ this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1
 	Bs.require = function (classes, callback) {
 		var index;
 
+		if (typeof classes === 'string') {
+			classes = [classes];
+		}
+
+		if (!classes.length) {
+			callback.apply(null, []);
+			return Bs;
+		}
+
 		/**
 		 * @callback requireCallback
 		 * @param {string|[]} required class or classes
@@ -317,20 +330,18 @@ this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1
 		return Bs;
 	};
 
+	/**
+	 *
+	 * @param {Array} classes
+	 * @param {Function}  callback
+	 * @param {Number} index
+	 * @private
+	 */
 	var _doRequire = function doRequire(classes, callback, index) {
 
 		var callbackArgs = [];
 		_dependenciesLoaded[index] = new $.Deferred();
 		_dependencies = {};
-
-		if (typeof classes === 'string') {
-			classes = [classes];
-		}
-
-		if (!classes.length) {
-			callback.apply(null, []);
-			return Bs;
-		}
 
 		for (var i = 0, className; className = classes[i]; i++) {
 			_requireOne(className);
