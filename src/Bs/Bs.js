@@ -176,16 +176,16 @@
 			classes = [classes];
 		}
 
-		if (!classes.length) {
-			callback.apply(null, []);
-			return Bs;
-		}
-
 		/**
 		 * @callback requireCallback
 		 * @param {string|[]} required class or classes
 		 */
 		callback = callback || function () {};
+
+		if (!classes.length) {
+			callback.apply(null, []);
+			return Bs;
+		}
 
 		_requireProgress.push(new $.Deferred());
 
