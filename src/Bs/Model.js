@@ -648,14 +648,19 @@ Bs.define('Bs.Model', {
 				Bs.Api.post(url, data, callback)
 			}
 			else {
+				url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 				if (me.isModified()) {
-					url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 					data = $.extend(true, {}, this.toModifiedObject(), apiParams);
 					Bs.Api.patch(url, data, callback)
 				}
 				else {
-					callback.always();
-					callback.nothing();
+					if(options.force){
+						Bs.Api.patch(url, null, callback)
+					}
+					else {
+						callback.always();
+						callback.nothing();
+					}
 				}
 			}
 		};
