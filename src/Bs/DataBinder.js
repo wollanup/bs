@@ -136,7 +136,7 @@ Bs.define('Bs.DataBinder', {
 					return true;
 				}
 				// Try to get property name from "name" (or other if modified) attribute
-				var property = $elToBind.attr(attr);
+				var property = $elToBind.attr("data-bind") || $elToBind.attr(attr);
 				if (property) {
 					// Set data-bind attribute
 					$elToBind.attr('data-bind', property);
@@ -174,7 +174,8 @@ Bs.define('Bs.DataBinder', {
 
 					if (_tagsWithValue.indexOf(tagName) > -1) {
 						if (type === 'radio') {
-							value = $el.filter(':checked').val();
+							var name = $el.attr("name");
+							value = view.$el.find("input[name=" + name + "]").filter(':checked').val();
 						}
 						else if (type === 'checkbox') {
 							value = $el.prop('checked');
