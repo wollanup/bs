@@ -2601,7 +2601,7 @@ Bs.define('Bs.DataBinder', {
 					return true;
 				}
 				// Try to get property name from "name" (or other if modified) attribute
-				var property = $elToBind.attr(attr);
+				var property = $elToBind.attr("data-bind") || $elToBind.attr(attr);
 				if (property) {
 					// Set data-bind attribute
 					$elToBind.attr('data-bind', property);
@@ -2639,7 +2639,8 @@ Bs.define('Bs.DataBinder', {
 
 					if (_tagsWithValue.indexOf(tagName) > -1) {
 						if (type === 'radio') {
-							value = $el.filter(':checked').val();
+							var name = $el.attr("name");
+							value = view.$el.find("input[name=" + name + "]").filter(':checked').val();
 						}
 						else if (type === 'checkbox') {
 							value = $el.prop('checked');
@@ -3394,14 +3395,19 @@ Bs.define('Bs.Model', {
 				Bs.Api.post(url, data, callback)
 			}
 			else {
+				url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 				if (me.isModified()) {
-					url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 					data = $.extend(true, {}, this.toModifiedObject(), apiParams);
 					Bs.Api.patch(url, data, callback)
 				}
 				else {
-					callback.always();
-					callback.nothing();
+					if(options.force){
+						Bs.Api.patch(url, null, callback)
+					}
+					else {
+						callback.always();
+						callback.nothing();
+					}
 				}
 			}
 		};
