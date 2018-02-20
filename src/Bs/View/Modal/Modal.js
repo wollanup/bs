@@ -104,9 +104,11 @@ Bs.define('Bs.View.Modal', {
 			me.$el.find('.view-content').find('input').first().focus().select();
 
 			// Draggable
-			$(me.$el.find(".modal-content")).draggable({
-				handle: ".modal-header"
-			});
+			if ($.fn.draggable) {
+				$(me.$el.find(".modal-content")).draggable({
+					handle: ".modal-header"
+				});
+			}
 
 			if (me.options.size === Bs.View.Modal.SIZE_MAX) {
 				$(window).on("resize", $.proxy(me.resize, me));

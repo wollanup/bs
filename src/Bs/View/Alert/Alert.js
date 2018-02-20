@@ -47,6 +47,8 @@ Bs.define('Bs.View.Alert', {
 				case 'info':
 					me.options.icon = 'fa fa-info-circle';
 					break;
+				default:
+					me.options.icon = "fa fa-" + me.options.type;
 			}
 		}
 		if (me.options.type === 'danger') {
