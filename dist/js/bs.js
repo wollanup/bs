@@ -5938,9 +5938,11 @@ Bs.define('Bs.View.Modal', {
 			me.$el.find('.view-content').find('input').first().focus().select();
 
 			// Draggable
-			$(me.$el.find(".modal-content")).draggable({
-				handle: ".modal-header"
-			});
+			if ($.fn.draggable) {
+				$(me.$el.find(".modal-content")).draggable({
+					handle: ".modal-header"
+				});
+			}
 
 			if (me.options.size === Bs.View.Modal.SIZE_MAX) {
 				$(window).on("resize", $.proxy(me.resize, me));
@@ -6769,6 +6771,8 @@ Bs.define('Bs.View.Alert', {
 				case 'info':
 					me.options.icon = 'fa fa-info-circle';
 					break;
+				default:
+					me.options.icon = "fa fa-" + me.options.type;
 			}
 		}
 		if (me.options.type === 'danger') {
