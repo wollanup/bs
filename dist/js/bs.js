@@ -1467,10 +1467,28 @@ Bs.define('Bs.Api', {
 
 		/**
 		 *
+		 * @param authorization
+		 * @return {Api}
+		 */
+		Api.setAuthorization = function (authorization) {
+			_headers['Authorization'] = authorization;
+			return this;
+		};
+
+		/**
+		 *
 		 * @return {*}
 		 */
 		Api.getAuthToken = function () {
 			return _headers.hasOwnProperty('Auth-Token') ? _headers['Auth-Token'] : '';
+		};
+
+		/**
+		 *
+		 * @return {*}
+		 */
+		Api.getAuthorization = function () {
+			return _headers.hasOwnProperty('Authorization') ? _headers['Authorization'] : '';
 		};
 
 		/**
