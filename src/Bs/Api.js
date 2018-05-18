@@ -84,11 +84,11 @@ Bs.define('Bs.Api', {
 			callback = _buildCallbackObject(callback);
 
 			config = {
-				type    : "",
-				url     : "",
-				data    : "",
-				dataType: "json",
-				headers: _headers
+                type    : "GET",
+                url     : "",
+                data    : null,
+                dataType: "json",
+                headers: _headers
 			};
 			$.extend(config, options);
 			return $.ajax(config).always(function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
@@ -205,7 +205,17 @@ Bs.define('Bs.Api', {
 			return _buildUrl(path);
 		};
 
-		/**
+        /**
+         *
+         * @param options
+         * @param [callback]
+         * @return {*}
+         */
+        Api.call = function (options, callback) {
+            return _ajax(callback, options);
+        };
+
+        /**
 		 *
 		 * @param url
 		 * @param [data]
