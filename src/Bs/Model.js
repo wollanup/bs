@@ -655,7 +655,7 @@ Bs.define('Bs.Model', {
 				}
 				else {
 					if(options.force){
-						Bs.Api.patch(url, null, callback)
+						Bs.Api.patch(url, apiParams, callback)
 					}
 					else {
 						callback.always();
