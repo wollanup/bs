@@ -2910,7 +2910,13 @@ Bs.define('Bs.Model', {
 		 */
 		Model.prototype.type = 'model';
 
-		/**
+        /**
+		 *
+         * @type {null}|{Object}
+         */
+        Model.prototype.triggeredEvents = null;
+
+        /**
 		 * Take a config object and set fields in class
 		 * @param data
 		 */
@@ -3547,12 +3553,61 @@ Bs.define('Bs.Model', {
 			return this.nameAsAProperty;
 		};
 
-		var _extend = function (child, parent, options) {
+        /**
+         *
+         * @param event
+         * @param callback
+         */
+        Model.prototype.on = function (event, callback) {
+            callback = callback || function () {};
+            if (this.triggeredEvents.hasOwnProperty(event)) {
+                callback(null, this.triggeredEvents[event]);
+                delete this.triggeredEvents[event]
+            }
+            $(this).on(event, callback);
+
+            return this;
+        };
+
+        Model.prototype.off = function (event) {
+            $(this).off(event);
+
+            return this;
+        };
+
+        /**
+         *
+         * @param event
+         * @param callback
+         */
+        Model.prototype.one = function (event, callback) {
+            callback = callback || function () {};
+            if (this.triggeredEvents.hasOwnProperty(event)) {
+                callback(null, this.triggeredEvents[event]);
+                delete this.triggeredEvents[event]
+            }
+            $(this).one(event, callback);
+
+            return this;
+        };
+        /**
+         *
+         * @param event
+         * @param params
+         */
+        View.prototype.trigger = function (event, params) {
+            this.triggeredEvents[event] = params;
+            $(this).triggerHandler(event, params);
+
+            return this;
+        };
+
+        var _extend = function (child, parent, options) {
 
 			child.fields = $.extend(true, {}, parent.fields, options.fields);
 			child.fn = $.extend(true, {}, parent.fn, options.fn);
 			child.relations = $.extend(true, {}, parent.relations, options.relations);
-
+            child.triggeredEvents = {};
 			// Prevent loop below to erase values
 			options.fields = undefined;
 			options.relations = undefined;
