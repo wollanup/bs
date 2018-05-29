@@ -3595,7 +3595,7 @@ Bs.define('Bs.Model', {
          * @param event
          * @param params
          */
-        View.prototype.trigger = function (event, params) {
+        Model.prototype.trigger = function (event, params) {
             this.triggeredEvents[event] = params;
             $(this).triggerHandler(event, params);
 
