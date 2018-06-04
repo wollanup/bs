@@ -3,6 +3,10 @@
 /** @namespace Bs.Storage */
 
 Bs.define('Bs.Storage', {
+    /**
+	 * @constructor
+     * @return {Bs.Storage}
+     */
 	construct: function () {
 
 

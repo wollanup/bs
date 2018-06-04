@@ -175,7 +175,7 @@ Bs.define('Bs.DataBinder', {
 					if (_tagsWithValue.indexOf(tagName) > -1) {
 						if (type === 'radio') {
 							var name = $el.attr("name");
-							value = view.$el.find("input[name=" + name + "]").filter(':checked').val();
+							value = view.$el.find("input[name='" + name + "']").filter(':checked').val();
 						}
 						else if (type === 'checkbox') {
 							value = $el.prop('checked');

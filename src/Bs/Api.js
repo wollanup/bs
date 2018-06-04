@@ -1,13 +1,15 @@
 'use strict';
 
-/** @namespace Bs.Api */
-
+/**
+ * Api communication handler
+ *
+ * Performs REST/CRUD operation
+ *
+ * @class Bs.Api
+ */
 Bs.define('Bs.Api', {
 	require  : 'Bs.Response',
-	/**
-	 *
-	 * @constructor
-	 */
+
 	construct: function () {
 		// TODO replace by "construct: function Api () {" when Api object will be removed or renamed in js/functions.js
 
@@ -132,12 +134,18 @@ Bs.define('Bs.Api', {
 		 */
 		var _headers = {};
 
-		var Api = new function Api() {};
+        /**
+         * Initializes a new instance of Api.
+         * @constructs Bs.Api
+         */
+        function Api() {}
 
 		/**
-		 *
-		 * @param {[]}pk
-		 * @return {string}
+         * Transform array PK to string
+         * @name Bs.Api#stringifyPK
+         * @function
+         * @param {array} pk - Primary Key
+		 * @return {string} Primary key
 		 */
 		Api.stringifyPK = function (pk) {
 			return pk.join('-');

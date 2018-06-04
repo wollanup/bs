@@ -516,35 +516,39 @@ Bs.define('Bs.View', {
 			return this.renderCompiledTpl(compiledTplId, data, callback);
 		};
 
-		View.prototype.getPartial = function (name, ns) {
-			var me = this,
-				dfd = new $.Deferred(),
-				fullName,
-				urlTemplate;
+        View.prototype.getPartial = function (name, ns) {
+            var me = this,
+                dfd = new $.Deferred(),
+                fullName,
+                urlTemplate;
 
-			if (!ns) {
-				ns = me.urlPath;
-			}
-			fullName = ns + '/tpl/' + name;
+            if (!ns) {
+                ns = me.tplPath;
+            }
+            else{
+                ns = ns + "/tpl"
+            }
 
-			if (Handlebars.partials.hasOwnProperty(fullName)) {
-				dfd.resolve();
-			}
-			else {
-				urlTemplate = me.urlRoot + '/' + fullName + '.partial';
-				Bs.Template.loadPartial(urlTemplate, fullName).then(function () {
-					dfd.resolve();
-				});
-			}
+            fullName = ns + '/' + name;
 
-			dfd.then(function () {
-				if (!Handlebars.partials[fullName]) {
-					throw Error('Partial "' + fullName + '" Not found');
-				}
-			});
+            if (Handlebars.partials.hasOwnProperty(fullName)) {
+                dfd.resolve();
+            }
+            else {
+                urlTemplate = me.urlRoot + '/' + fullName + '.partial';
+                Bs.Template.loadPartial(urlTemplate, fullName).then(function () {
+                    dfd.resolve();
+                });
+            }
 
-			return dfd;
-		};
+            dfd.then(function () {
+                if (!Handlebars.partials[fullName]) {
+                    throw Error('Partial "' + fullName + '" Not found');
+                }
+            });
+
+            return dfd;
+        };
 
 		View.prototype.getTpl = function (name, data, ns) {
 			var me = this,
@@ -553,10 +557,14 @@ Bs.define('Bs.View', {
 				fullName,
 				urlTemplate;
 
-			if (!ns) {
-				ns = me.urlPath;
-			}
-			fullName = ns + '/tpl/' + name;
+            if (!ns) {
+                ns = me.tplPath;
+            }
+            else{
+                ns = ns + "/tpl"
+            }
+
+            fullName = ns + '/' + name;
 
 			if (Handlebars.templates.hasOwnProperty(fullName)) {
 				dfd.resolve();
@@ -601,13 +609,13 @@ Bs.define('Bs.View', {
 				htmlBeforeNs,
 				tplFn,
 				urlTemplate,
-				templateName = me.urlPath + '/tpl/' + compiledTplId;
+                templateName = me.tplPath + '/' + compiledTplId;
 			if (Handlebars.templates.hasOwnProperty(templateName)) {
 				dfd.resolve();
 			}
 			else {
-				urlTemplate = me.urlRoot + '/' + me.urlPath + '/tpl/' + compiledTplId + '.handlebars';
-				Bs.Template.load(urlTemplate, templateName).then(function () {
+                urlTemplate = me.urlRoot + '/' + me.tplPath + '/' + compiledTplId + '.handlebars';
+                Bs.Template.load(urlTemplate, templateName).then(function () {
 					dfd.resolve();
 				});
 			}
@@ -1261,6 +1269,7 @@ Bs.define('Bs.View', {
 			var file = View.prototype.name.split('.');
 			View.prototype.fileName = file[file.length - 1];
 			View.prototype.urlRoot = (file[0] === 'Bs') ? Bs.getConfig().urlCore : Bs.getConfig().urlApp;
+            View.prototype.tplPath = View.prototype.urlPath + "/tpl";
 
 			// Translations
 			if (options.translationPath === 'inherit') {
@@ -1280,7 +1289,13 @@ Bs.define('Bs.View', {
 			else {
 				View.prototype.cssPath = options.cssPath || (View.prototype.urlPath + '/' + View.prototype.camelName + '.css');
 			}
-			if (Bs.isAsync()) {
+
+            // Tpl
+            if (options.tplPath === 'inherit') {
+                View.prototype.tplPath = parent.prototype.tplPath;
+            }
+
+            if (Bs.isAsync()) {
 				// Template
 				var dfdTemplate;
 				if (options.templatePath === 'inherit') {

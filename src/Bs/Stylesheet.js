@@ -156,14 +156,13 @@ Bs.define('Bs.Stylesheet', {
 
 			if (index > -1) {
 				$('#stylesheet-' + index).remove();
+            }
+			++count;
+			loadedUrls[count] = url;
+			(useImportLoad ? importLoad : linkLoad)(url, count, function () {
 				dfd.resolve();
-			} else {
-				++count;
-				loadedUrls[count] = url;
-				(useImportLoad ? importLoad : linkLoad)(url, count, function () {
-					dfd.resolve();
-				});
-			}
+			});
+
 			return dfd;
 		};
 
