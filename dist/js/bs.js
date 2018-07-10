@@ -7429,16 +7429,27 @@ Bs.define('Bs.Util.UrlParser', {
 		/**
 		 *
 		 * @param {String} paramName
+		 * @deprecated use getParam()
 		 * @returns {*}
 		 */
-		UrlParser.prototype.get = function (paramName) {
-			var me = this;
+		UrlParser.prototype.get = function (paramName, defaultValue) {
+			return this.getParam(paramName, defaultValue);
+		};
 
+		/**
+		 *
+		 * @param {String} paramName
+		 * @param defaultValue
+		 * @returns {*}
+		 */
+		UrlParser.prototype.getParam = function (paramName, defaultValue) {
+			var me = this;
+			defaultValue = defaultValue || null;
 			if (me.params.hasOwnProperty(paramName)) {
 				return me.params[paramName];
 			}
 
-			return null;
+			return defaultValue;
 		};
 
 		/**
