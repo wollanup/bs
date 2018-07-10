@@ -120,7 +120,9 @@ Bs.define('Bs.Util.UrlParser', {
 		 */
 		UrlParser.prototype.getParam = function (paramName, defaultValue) {
 			var me = this;
-			defaultValue = defaultValue || null;
+			if(defaultValue === undefined){
+                defaultValue = null;
+			}
 			if (me.params.hasOwnProperty(paramName)) {
 				return me.params[paramName];
 			}
