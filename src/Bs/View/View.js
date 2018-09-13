@@ -26,7 +26,11 @@ Bs.define('Bs.View', {
 					}
 				};
 			_initialize.call(me, config).then(function () {
-				var init = me.initialize(config);
+                var init;
+                me.one("ready", function(){
+                    me.$el.addClass("bs-view-ready");
+                });
+                init = me.initialize(config);
 				if (init && "then" in init) {
 					init.fail(function () {
 						me.initializeFail.apply(me, arguments);
