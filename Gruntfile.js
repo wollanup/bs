@@ -29,6 +29,11 @@ module.exports = function (grunt) {
 			js : {
 				src : [
 					'dist/js/tmp/templates.js',
+          'node_modules/i18next/dist/umd/i18next.min.js',
+          'node_modules/jquery-i18next/dist/umd/jquery-i18next.js',
+					'node_modules/i18next-xhr-backend/dist/umd/i18nextXHRBackend.js',
+					'node_modules/i18next-browser-languagedetector/dist/umd/i18nextBrowserLanguageDetector.js',
+          'node_modules/',
 					'src/Bs/Bs.js',
 					'src/Bs/Lang.js',
 					'src/Bs/Api.js',
