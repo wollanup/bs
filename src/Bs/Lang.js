@@ -100,9 +100,9 @@ Bs.define('Bs.Lang', {
        */
       set              : function (lang, callback) {
         callback = callback || function () { }
-        if (lang !== i18next.lng()) {
+        if (lang !== i18next.language) {
           document.cookie = 'i18next=' + lang
-          i18next.setLng(lang, function () {
+          i18next.changeLanguage(lang, function () {
             Bs.Lang.translateAll()
             callback()
           })
