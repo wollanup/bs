@@ -873,12 +873,14 @@ return Backend;
 			Bs._store = _store;
 			Bs._storeLib = _storeLib;
 			Bs._dependencies = _dependencies;
+			Bs._overriddenClasses = _overriddenClasses;
 		}
 		else {
 			Bs._dependenciesLoaded = undefined;
 			Bs._store = undefined;
 			Bs._storeLib = undefined;
 			Bs._dependencies = undefined;
+      Bs._overriddenClasses = null;
 		}
 	};
 
@@ -997,7 +999,13 @@ return Backend;
 		_dependencies = {};
 
 		for (var i = 0, className; className = classes[i]; i++) {
-			_requireOne(className);
+
+      // Search for overridden class
+      if (_overriddenClasses.hasOwnProperty(className)) {
+        className = _overriddenClasses[className]
+      }
+
+      _requireOne(className);
 			(function (className) {
 				callbackArgs.push(function (options) {
 					return Bs.create(className, options)
@@ -1161,6 +1169,11 @@ return Backend;
 			throw new Error('Unable to create "' + className + '" not previously loaded, use "Bs.require()" before');
 		}
 
+		// Search for overridden class
+    if (_overriddenClasses.hasOwnProperty(className)) {
+      className = _overriddenClasses[className]
+    }
+
 		// Force removing from queue and dependencies, in case of define without require
 		_removeFromQueue(className);
 		delete _dependencies[className];
@@ -1173,7 +1186,16 @@ return Backend;
 		}
 	};
 
-	/**
+  /**
+	 *
+   * @param baseClass
+   * @param overriddenClass
+   */
+  Bs.override = function (baseClass, overriddenClass) {
+    _overriddenClasses[baseClass] = overriddenClass
+  }
+
+  /**
 	 * @todo remove all references (window, alias, CSS loaded)
 	 * @param className
 	 */
@@ -1339,7 +1361,9 @@ return Backend;
 	 */
 	var _store = {};
 
-	var _storeLib = {};
+  var _overriddenClasses = {};
+
+  var _storeLib = {};
 
 	/**
 	 * List of instances available
