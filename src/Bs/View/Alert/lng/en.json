@@ -16,7 +16,7 @@
     "title": "Warning"
   },
   "danger": {
-    "title": "Error",
+    "title": "Oops",
     "msg": {
       "notSaved": "Modifications not saved",
       "notFetched": "Unexpected data received from server",

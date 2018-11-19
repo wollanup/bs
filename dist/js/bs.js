@@ -7618,8 +7618,9 @@ Bs.define('Bs.View.Alert', {
 					me.trigger('close');
 				});
 			})
-		}
-		me.renderCallback();
+		} else {
+      me.renderCallback();
+    }
 		me.trigger("ready");
 	},
 
@@ -7631,6 +7632,9 @@ Bs.define('Bs.View.Alert', {
 			me.$el.find('.alert-icon').fadeIn();
 		});
 		if (me.options.autoDismissible) {
+			if(me.data.idTimeout) {
+				clearTimeout(me.data.idTimeout)
+			}
 			me.data.idTimeout = setTimeout(function () {
 				me.close();
 			}, me.options.delay)
@@ -8213,15 +8217,15 @@ Bs.define('Bs.Util.UrlParser', {
 	};
 });
 
-+function(){Bs.Lang.addResourceBundle('en', 'Bs/View/Alert', {"info":{"title":"Information","msg":{"nothing":"Nothing to modify"}},"success":{"title":"Finished","msg":{"saved":"Saved","default":"Operation successful"}},"warning":{"title":"Warning"},"danger":{"title":"Error","msg":{"notSaved":"Modifications not saved","notFetched":"Unexpected data received from server","default":"An error has occurred"}}})}();
++function(){Bs.Lang.addResourceBundle('en', 'Bs/View/Alert', {"info":{"title":"Information","msg":{"nothing":"Nothing to modify"}},"success":{"title":"Finished","msg":{"saved":"Saved","default":"Operation successful"}},"warning":{"title":"Warning"},"danger":{"title":"Oops","msg":{"notSaved":"Modifications not saved","notFetched":"Unexpected data received from server","default":"An error has occurred"}}})}();
 +function(){Bs.Lang.addResourceBundle('en', 'Bs/View/Collection/Empty', {"nothingToDisplay":"Nothing to display..."})}();
 +function(){Bs.Lang.addResourceBundle('en', 'Bs/View/Collection/Error', {"error":"Oops, something wrong happened there..."})}();
 +function(){Bs.Lang.addResourceBundle('en', 'Bs/View/Modal', {})}();
-+function(){Bs.Lang.addResourceBundle('fr', 'Bs/View/Alert', {"info":{"title":"Information","msg":{"nothing":"Rien à modifier"}},"success":{"title":"Terminé","msg":{"saved":"Modification effectuée","default":"Opération réussie"}},"warning":{"title":"Attention"},"danger":{"title":"Erreur","msg":{"notSaved":"Les modifications n'ont pas pu être enregistrées","notFetched":"Le serveur n'a pas renvoyé les données attendues","default":"Une erreur est survenue"}}})}();
++function(){Bs.Lang.addResourceBundle('fr', 'Bs/View/Alert', {"info":{"title":"Information","msg":{"nothing":"Rien à modifier"}},"success":{"title":"Terminé","msg":{"saved":"Modification effectuée","default":"Opération réussie"}},"warning":{"title":"Attention"},"danger":{"title":"Oups","msg":{"notSaved":"Les modifications n'ont pas pu être enregistrées","notFetched":"Le serveur n'a pas renvoyé les données attendues","default":"Une erreur est survenue"}}})}();
 +function(){Bs.Lang.addResourceBundle('fr', 'Bs/View/Collection/Empty', {"nothingToDisplay":"Rien à afficher pour le moment..."})}();
 +function(){Bs.Lang.addResourceBundle('fr', 'Bs/View/Collection/Error', {"error":"Oups, il y a eu un problème..."})}();
 +function(){Bs.Lang.addResourceBundle('fr', 'Bs/View/Modal', {})}();
-+function(){Bs.Lang.addResourceBundle('nl', 'Bs/View/Alert', {"info":{"title":"Informatie","msg":{"nothing":"Niets te wijzigen"}},"success":{"title":"Klaar","msg":{"saved":"Wijziging doorgevoerd","default":"Met succes uitgevoerd"}},"warning":{"title":"Waarschuwing"},"danger":{"title":"Fout","msg":{"notSaved":"De wijzigingen konden niet opgeslagen worden","notFetched":"De server heeft de verwachte gegevens niet teruggestuurd","default":"Er is een fout opgetreden"}}})}();
++function(){Bs.Lang.addResourceBundle('nl', 'Bs/View/Alert', {"info":{"title":"Informatie","msg":{"nothing":"Niets te wijzigen"}},"success":{"title":"Klaar","msg":{"saved":"Wijziging doorgevoerd","default":"Met succes uitgevoerd"}},"warning":{"title":"Waarschuwing"},"danger":{"title":"Oops","msg":{"notSaved":"De wijzigingen konden niet opgeslagen worden","notFetched":"De server heeft de verwachte gegevens niet teruggestuurd","default":"Er is een fout opgetreden"}}})}();
 +function(){Bs.Lang.addResourceBundle('nl', 'Bs/View/Collection/Empty', {"nothingToDisplay":"Momenteel niets te tonen…"})}();
 +function(){Bs.Lang.addResourceBundle('nl', 'Bs/View/Collection/Error', {"error":"Oops, something wrong happened there..."})}();
 +function(){Bs.Lang.addResourceBundle('nl', 'Bs/View/Modal', {})}();

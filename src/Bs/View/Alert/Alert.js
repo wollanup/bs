@@ -102,8 +102,9 @@ Bs.define('Bs.View.Alert', {
 					me.trigger('close');
 				});
 			})
-		}
-		me.renderCallback();
+		} else {
+      me.renderCallback();
+    }
 		me.trigger("ready");
 	},
 
@@ -115,6 +116,9 @@ Bs.define('Bs.View.Alert', {
 			me.$el.find('.alert-icon').fadeIn();
 		});
 		if (me.options.autoDismissible) {
+			if(me.data.idTimeout) {
+				clearTimeout(me.data.idTimeout)
+			}
 			me.data.idTimeout = setTimeout(function () {
 				me.close();
 			}, me.options.delay)

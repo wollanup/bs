@@ -16,7 +16,7 @@
     "title": "Waarschuwing"
   },
   "danger": {
-    "title": "Fout",
+    "title": "Oops",
     "msg": {
       "notSaved": "De wijzigingen konden niet opgeslagen worden",
       "notFetched": "De server heeft de verwachte gegevens niet teruggestuurd",
