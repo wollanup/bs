@@ -16,7 +16,7 @@
     "title": "Attention"
   },
   "danger": {
-    "title": "Erreur",
+    "title": "Oups",
     "msg": {
       "notSaved": "Les modifications n'ont pas pu être enregistrées",
       "notFetched": "Le serveur n'a pas renvoyé les données attendues",
