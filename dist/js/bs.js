@@ -7523,18 +7523,22 @@ Bs.define('Bs.View.Alert', {
 	elStyle      : {position: 'relative'},
 	elClass      : "bootstrap",
 	options      : {
-		translate      : true,
-		translateTitle : true,
-		icon           : null,
-		type           : 'info',
-		title          : null,
-		hasTitle       : true,
-		msg            : null,
-		view           : null,
-		viewOptions    : null,
-		dismissible    : true,
-		autoDismissible: false,
-		delay          : 4000
+		translate      			: true,
+		translateTitle 			: true,
+		icon           			: null,
+		type           			: 'info',
+		title          			: null,
+		hasTitle       			: true,
+		msg            			:	null,
+		view           			: null,
+		viewOptions    			: null,
+		dismissible    			: true,
+		autoDismissible			: false,
+		cancelDismissOnHover: true,
+		delay          			: 4000
+	},
+	data					: {
+		idTimeout : null
 	},
 
 	initialize: function () {
@@ -7627,9 +7631,17 @@ Bs.define('Bs.View.Alert', {
 			me.$el.find('.alert-icon').fadeIn();
 		});
 		if (me.options.autoDismissible) {
-			setTimeout(function () {
+			me.data.idTimeout = setTimeout(function () {
 				me.close();
 			}, me.options.delay)
+			if(me.options.cancelDismissOnHover) {
+				me.$el.on('mouseover', function() {
+					if(me.data.idTimeout) {
+            clearTimeout(me.data.idTimeout)
+            me.data.idTimeout = null;
+          }
+				})
+			}
 		}
 	},
 
