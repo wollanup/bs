@@ -6723,10 +6723,6 @@ Bs.define('Bs.View.Modal', {
 		this.$el.find('.modal').modal('hide');
 	},
 
-	resize: function () {
-		this.$el.find(".view-content").css({height: $(window).height() - 180});
-	},
-
 	afterRender: function () {
 
 		var me = this,
@@ -6760,10 +6756,6 @@ Bs.define('Bs.View.Modal', {
 				});
 			}
 
-			if (me.options.size === Bs.View.Modal.SIZE_MAX) {
-				$(window).on("resize", $.proxy(me.resize, me));
-				me.resize();
-			}
 			me.trigger('ready');
 		});
 
