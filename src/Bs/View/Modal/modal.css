@@ -41,6 +41,7 @@
 	}
 	.m_flexbox.m_flexwrap .bs-view-modal .modal-body {
 		flex: 1;
+		overflow: auto;
 	}
 	.m_flexbox.m_flexwrap .bs-view-modal .view-content {
 		height: 100% !important;
