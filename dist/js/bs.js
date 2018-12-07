@@ -6733,6 +6733,12 @@ Bs.define('Bs.View.Modal', {
 		this.$el.find('.modal').modal('hide');
 	},
 
+	resize: function () {
+		// padding 2 * 30
+		// header 56
+		this.$el.find(".view-content").css({height: $(window).height() - 116});
+	},
+
 	afterRender: function () {
 
 		var me = this,
@@ -6750,6 +6756,7 @@ Bs.define('Bs.View.Modal', {
 		$modal.find('.modal-title-sub').html(me.options.subTitle);
 		$modal.find('.modal-icon').addClass(me.options.icon);
 		$modal.one('shown.bs.modal', function () {
+			var flexSupport = (window['Modernizr'] && Modernizr.flexbox);
 			for (var view in me.subViewList) {
 				// re-trigger previously prevented "ready" event on subViews
 				if (me.subViewList.hasOwnProperty(view)) {
@@ -6765,6 +6772,11 @@ Bs.define('Bs.View.Modal', {
 				$(me.$el.find(".modal-content")).draggable({
 					handle: ".modal-header"
 				});
+			}
+
+			if (me.options.size === Bs.View.Modal.SIZE_MAX && !flexSupport) {
+				$(window).on("resize", $.proxy(me.resize, me));
+				me.resize();
 			}
 
 			me.trigger('ready');
