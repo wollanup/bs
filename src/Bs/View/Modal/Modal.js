@@ -28,7 +28,10 @@ Bs.define('Bs.View.Modal', {
 		bodyPadding: true,
 		viewOptions: null,
 		closable   : true,
-		backdrop   : 'static'
+		backdrop   : 'static',
+		data:{
+			readyArgs:[]
+		}
 	},
 
 	beforeCreateSubView: function () {
@@ -49,6 +52,13 @@ Bs.define('Bs.View.Modal', {
 					var that = this;
 					that.one("ready", function (e) {
 						if (e) {
+							// Store args received from initial ready event
+							var args = [];
+							for (var i = 1; i < arguments.length; i++) {
+								args.push(arguments[i]);
+							}
+							me.data.readyArgs = args;
+
 							e.preventDefault();
 							e.stopImmediatePropagation();
 						}
@@ -93,7 +103,8 @@ Bs.define('Bs.View.Modal', {
 			for (var view in me.subViewList) {
 				// re-trigger previously prevented "ready" event on subViews
 				if (me.subViewList.hasOwnProperty(view)) {
-					me.subViewList[view].trigger('ready');
+					// TODO, maybe we want to pass args only from view which is the main view from options.view
+					me.subViewList[view].trigger('ready', me.data.readyArgs);
 				}
 			}
 			// In case, focus first input if exists
