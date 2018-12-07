@@ -6736,7 +6736,8 @@ Bs.define('Bs.View.Modal', {
 	resize: function () {
 		// padding 2 * 30
 		// header 56
-		this.$el.find(".view-content").css({height: $(window).height() - 116});
+		// borders 4 to be safe
+		this.$el.find(".view-content").css({height: $(window).height() - 120});
 	},
 
 	afterRender: function () {
