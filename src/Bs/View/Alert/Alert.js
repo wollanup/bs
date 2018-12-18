@@ -18,7 +18,7 @@ Bs.define('Bs.View.Alert', {
 		viewOptions    			: null,
 		dismissible    			: true,
 		autoDismissible			: false,
-		cancelDismissOnHover: true,
+		cancelDismissOnHover: false,
 		delay          			: 4000
 	},
 	data					: {
