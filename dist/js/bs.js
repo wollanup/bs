@@ -1842,7 +1842,7 @@ Bs.define('Bs.Lang', {
             selectorAttr                : 'data-i18n',
             targetAttr                  : 'i18n-target',
             optionsAttr                 : 'i18n-options',
-            useOptionsAttr              : false,
+            useOptionsAttr              : true,
             parseDefaultValueFromContent: true,
           })
           for (var i = 0, bundle; bundle = _bundles[i]; i++) {
@@ -7574,7 +7574,7 @@ Bs.define('Bs.View.Alert', {
 		viewOptions    			: null,
 		dismissible    			: true,
 		autoDismissible			: false,
-		cancelDismissOnHover: true,
+		cancelDismissOnHover: false,
 		delay          			: 4000
 	},
 	data					: {
