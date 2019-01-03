@@ -6009,9 +6009,9 @@ Bs.define('Bs.View', {
 				me.$el.remove();
 			}
 			Bs.removeCmp(me.id);
+			me.trigger('afterDestroy');
 			me.off();
 			callback();
-			me.trigger('afterDestroy');
 		};
 
 		View.prototype.formToObject = function (form) {
