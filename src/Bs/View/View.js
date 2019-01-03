@@ -659,10 +659,8 @@ Bs.define('Bs.View', {
 		View.prototype.getTemplateHtml = function (callback) {
 			var me = this, tpl;
 			callback = callback || function () {};
-			tpl = (typeof me.tpl === 'function') ? me.tpl(_convertTplData(me.getTplData())) : me.tpl;
-			me.triggerHandler("beforeTranslateTpl", tpl);
+            tpl = (typeof me.tpl === 'function') ? me.tpl(_convertTplData(me.getTplData())) : me.tpl;
 			_prepareTranslation.call(me, tpl, function (tplHtml) {
-				me.triggerHandler("afterTranslateTpl", tpl);
 				callback(tplHtml)
 			});
 		};
