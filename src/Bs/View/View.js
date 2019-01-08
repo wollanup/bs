@@ -299,7 +299,7 @@ Bs.define('Bs.View', {
 			me.zIndex = View.nbInstances;
 
 			// Extend view with options object
-			_extend(me, me, config);
+			_extend(me, me, config, false);
 
 			// Add view id to options
 			me.options.id = me.id;
@@ -1366,28 +1366,29 @@ Bs.define('Bs.View', {
 		 * @param config
 		 * @private
 		 */
-		var _extend = function (child, parent, config) {
+		var _extend = function (child, parent, config, fromDefine) {
 			var cloneConfig = $.extend({}, config);
 			if (typeof config.require === 'string') {
 				config.require = [config.require];
 			}
 
-			// Transform config string/model into array
-			config.model = config.model || [];
-			if ($.isArray(config.model) === false) {
-				config.model = [config.model];
-			}
-
-			// Transform simple array into object
-			// need to extend because some prototype sharing troubles (i.e. Collection.Item)
-			child.model = child.model ? $.extend(true, {}, child.model) : {};
-			for (var i = 0, modelName; modelName = config.model[i]; i++) {
-				// String or model ?
-				if (typeof modelName === 'object') {
-					child.model[modelName.className] = modelName;
+			/// Transform config string/model into array
+			if(config.model) {
+				if ($.isArray(config.model) === false) {
+					config.model = [config.model];
 				}
-				else {
-					child.model[modelName] = modelName;
+
+				// Transform simple array into object
+				// need to extend because some prototype sharing troubles (i.e. Collection.Item)
+				child.model =  {};
+				for (var i = 0, modelName; modelName = config.model[i]; i++) {
+					// String or model ?
+					if (typeof modelName === 'object') {
+						child.model[modelName.className] = modelName;
+					}
+					else {
+						child.model[modelName] = modelName;
+					}
 				}
 			}
 
