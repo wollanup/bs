@@ -660,7 +660,9 @@ Bs.define('Bs.View', {
 			var me = this, tpl;
 			callback = callback || function () {};
 			tpl = (typeof me.tpl === 'function') ? me.tpl(_convertTplData(me.getTplData())) : me.tpl;
+			me.triggerHandler("beforeTranslateTpl", tpl);
 			_prepareTranslation.call(me, tpl, function (tplHtml) {
+				me.triggerHandler("afterTranslateTpl", tpl);
 				callback(tplHtml)
 			});
 		};
@@ -1002,9 +1004,9 @@ Bs.define('Bs.View', {
 				me.$el.remove();
 			}
 			Bs.removeCmp(me.id);
+			me.trigger('afterDestroy');
 			me.off();
 			callback();
-			me.trigger('afterDestroy');
 		};
 
 		View.prototype.formToObject = function (form) {
