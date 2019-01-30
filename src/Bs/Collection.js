@@ -353,11 +353,11 @@ Bs.define('Bs.Collection', {
 			apiParams.sort = sort || null;
 			apiParams.filter = filter || null;
 
-			if(apiMethod === 'GET') {
-				return Bs.Api.get(url, apiParams, callback);
-			} else if(apiMethod === 'POST') {
+			if(apiMethod === 'POST') {
 				return Bs.Api.post(url, apiParams, callback);
-			}
+			} else {
+                return Bs.Api.get(url, apiParams, callback);
+            }
 		};
 
 		/**
