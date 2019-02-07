@@ -353,7 +353,7 @@ Bs.define('Bs.Collection', {
 			apiParams.sort = sort || null;
 			apiParams.filter = filter || null;
 
-			Bs.Api[apiMethod](url, apiParams, callback);
+			return Bs.Api[apiMethod](url, apiParams, callback);
 		};
 
 		/**
