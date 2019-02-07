@@ -600,6 +600,19 @@ Bs.define('Bs.View', {
 			return dfdFinal;
 		};
 
+		View.prototype.loadTpl = function (compiledTplId) {
+			var me = this, dfd = new $.Deferred(), templateName = me.tplPath + '/' + compiledTplId, urlTemplate;
+			if (Handlebars.templates.hasOwnProperty(templateName)) {
+				dfd.resolve();
+			}
+			else {
+				urlTemplate = me.urlRoot + '/' + me.tplPath + '/' + compiledTplId + '.handlebars';
+				Bs.Template.load(urlTemplate, templateName).then(function () {
+					dfd.resolve();
+				});
+			}
+			return dfd;
+		};
 		/**
 		 *
 		 * @param compiledTplId
@@ -608,23 +621,12 @@ Bs.define('Bs.View', {
 		 */
 		View.prototype.renderCompiledTpl = function (compiledTplId, data, callback) {
 			var me = this,
-				dfd = new $.Deferred(),
 				dfdFinal = new $.Deferred(),
 				htmlBeforeNs,
 				tplFn,
-				urlTemplate,
-                templateName = me.tplPath + '/' + compiledTplId;
-			if (Handlebars.templates.hasOwnProperty(templateName)) {
-				dfd.resolve();
-			}
-			else {
-                urlTemplate = me.urlRoot + '/' + me.tplPath + '/' + compiledTplId + '.handlebars';
-                Bs.Template.load(urlTemplate, templateName).then(function () {
-					dfd.resolve();
-				});
-			}
+				templateName = me.tplPath + '/' + compiledTplId;
 
-			dfd.then(function () {
+			me.loadTpl(compiledTplId).then(function () {
 				// No data
 				if (typeof data === 'function') {
 					callback = data;
