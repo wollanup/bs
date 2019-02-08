@@ -39,7 +39,7 @@ Bs.define('Bs.DataBinder', {
 			if (me.view === null) {
 				throw new Error('You must create object with a view param');
 			}
-			if (me.view.model.length === 0) {
+			if (!me.view.model || $.isEmptyObject(me.view.model)) {
 				throw new Error('No model used by ' + this.view.name);
 			}
 
