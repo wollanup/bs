@@ -67,7 +67,7 @@ Bs.define('Bs.Collection', {
 		 * Method identifier for API calls (myMethod)
 		 * @type {string}
 		 */
-		Collection.prototype.apiMethod = "GET";
+		Collection.prototype.apiMethod = "get";
 		/**
 		 * Resource identifier for API calls (myclass)
 		 * @type {string}
@@ -353,7 +353,7 @@ Bs.define('Bs.Collection', {
 			apiParams.sort = sort || null;
 			apiParams.filter = filter || null;
 
-			return Bs.Api[apiMethod](url, apiParams, callback);
+			return Bs.Api[apiMethod.toLowerCase()](url, apiParams, callback);
 		};
 
 		/**
