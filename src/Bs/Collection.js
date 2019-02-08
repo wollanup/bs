@@ -64,6 +64,11 @@ Bs.define('Bs.Collection', {
 		Collection.prototype.id = 'collection';
 
 		/**
+		 * Method identifier for API calls (myMethod)
+		 * @type {string}
+		 */
+		Collection.prototype.apiMethod = "GET";
+		/**
 		 * Resource identifier for API calls (myclass)
 		 * @type {string}
 		 */
@@ -309,6 +314,7 @@ Bs.define('Bs.Collection', {
 				sort = options.sort || false,
 				filter = options.filter || false,
 				apiParams = options.apiParams || me.apiParams,
+				apiMethod = options.apiMethod || me.apiMethod,
 				apiAction = options.apiAction || me.apiAction,
 				apiResource = options.apiResource || me.apiResource,
 				apiRoute = options.apiRoute || me.apiRoute;
@@ -347,7 +353,7 @@ Bs.define('Bs.Collection', {
 			apiParams.sort = sort || null;
 			apiParams.filter = filter || null;
 
-			return Bs.Api.get(url, apiParams, callback);
+			return Bs.Api[apiMethod](url, apiParams, callback);
 		};
 
 		/**
