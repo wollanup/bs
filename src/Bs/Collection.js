@@ -67,7 +67,7 @@ Bs.define('Bs.Collection', {
 		 * Method identifier for API calls (myMethod)
 		 * @type {string}
 		 */
-		Collection.prototype.apiMethod = "GET";
+		Collection.prototype.apiMethod = "get";
 		/**
 		 * Resource identifier for API calls (myclass)
 		 * @type {string}
