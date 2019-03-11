@@ -1368,31 +1368,35 @@ Bs.define('Bs.View', {
 		 * @param config
 		 * @private
 		 */
-		var _extend = function (child, parent, config, fromDefine) {
+		var _extend = function (child, parent, config) {
 			var cloneConfig = $.extend({}, config);
 			if (typeof config.require === 'string') {
 				config.require = [config.require];
 			}
 
-			/// Transform config string/model into array
-			if(config.model) {
-				if ($.isArray(config.model) === false) {
-					config.model = [config.model];
-				}
+            /// Transform config string/model into array
+            config.model = config.model || [];
+            if ($.isArray(config.model) === false) {
+                config.model = [config.model];
+            }
+            if (config.model.length) {
+                child.model = {};
+            }
+            else {
+                // need to extend because some prototype sharing troubles (i.e. Collection.Item)
+                child.model = child.model ? $.extend(true, {}, child.model) : {};
+            }
 
-				// Transform simple array into object
-				// need to extend because some prototype sharing troubles (i.e. Collection.Item)
-				child.model =  {};
-				for (var i = 0, modelName; modelName = config.model[i]; i++) {
-					// String or model ?
-					if (typeof modelName === 'object') {
-						child.model[modelName.className] = modelName;
-					}
-					else {
-						child.model[modelName] = modelName;
-					}
-				}
-			}
+            // Transform simple array into object
+            for (var i = 0, modelName; modelName = config.model[i]; i++) {
+                // String or model ?
+                if (typeof modelName === 'object') {
+                    child.model[modelName.className] = modelName;
+                }
+                else {
+                    child.model[modelName] = modelName;
+                }
+            }
 
 			child.data = $.extend(true, {}, parent.data, config.data);
 			// todo : remove, use options instead
