@@ -419,7 +419,9 @@ Bs.define('Bs.View.Collection', {
 	each: function (callback) {
 		var me = this;
 		for (var i = 0, item; item = me.items[i]; i++) {
-			callback(item, i);
+			if(callback(item, i) === false){
+				break;
+			}
 		}
 	}
 
