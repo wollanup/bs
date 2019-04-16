@@ -5424,6 +5424,7 @@ Bs.define('Bs.View', {
 		 */
 		View.prototype.setModel = function (model) {
 			this.model[model.getNameAsAProperty()] = model;
+			this.model[model.className] = model;
 
 			return this;
 		};
