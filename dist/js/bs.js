@@ -5424,6 +5424,7 @@ Bs.define('Bs.View', {
 		 */
 		View.prototype.setModel = function (model) {
 			this.model[model.getNameAsAProperty()] = model;
+			this.model[model.className] = model;
 
 			return this;
 		};
@@ -7335,7 +7336,9 @@ Bs.define('Bs.View.Collection', {
 	each: function (callback) {
 		var me = this;
 		for (var i = 0, item; item = me.items[i]; i++) {
-			callback(item, i);
+			if(callback(item, i) === false){
+				break;
+			}
 		}
 	}
 
