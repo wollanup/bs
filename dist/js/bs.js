@@ -7170,15 +7170,49 @@ Bs.define('Bs.View.Collection', {
 	/**
 	 *
 	 * @param [data]
+	 * @param viewOptions
 	 * @returns {View}
 	 */
-	addItem : function(data){
+	addItem : function(data, viewOptions){
 		var me = this;
 		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
 			me.data.$elEmptyCollection.empty();
 		}
 
-		return me.renderOne(me.getCollection().add(data));
+		return me.renderOne(me.getCollection().add(data), viewOptions);
+	},
+
+	/**
+	 *
+	 * @param [data]
+	 * @param viewOptions
+	 * @returns {View}
+	 */
+	prependItem : function(data, viewOptions){
+		var me = this;
+		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
+			me.data.$elEmptyCollection.empty();
+		}
+		var $tmp = $('<div></div>');
+		var view = me.renderOne(me.getCollection().add(data), viewOptions, $tmp);
+		me.data.$elCollection.prepend($tmp.children()[0]);
+		return view
+	},
+	/**
+	 *
+	 * @param {Model} model
+	 * @returns {View}
+	 */
+	removeItem : function(model){
+		var me = this, view;
+		me.getCollection().remove(model);
+		view = me.itemsByPk[model.get('id')];
+		view.destroy();
+		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
+			me.renderEmptyCollection();
+		}
+
+		return view;
 	},
 	/**
 	 *
@@ -7196,12 +7230,13 @@ Bs.define('Bs.View.Collection', {
 		return view;
 	},
 
-	renderOne: function (model) {
+	renderOne: function (model, viewOptions, $el) {
 		var me = this;
 		me.viewOptions = me.viewOptions || {};
-		var options = $.extend(true, {}, me.viewOptions, {
+		viewOptions = viewOptions || {};
+		var options = $.extend(true, {}, me.viewOptions, viewOptions, {
 			"bindData"       : me.bindData,
-			"renderTo"       : me.data.$elCollection,
+			"renderTo"       : $el || me.data.$elCollection,
 			"model"          : model,
 			getCollection    : function () {
 				return me.getCollection();
@@ -7336,7 +7371,9 @@ Bs.define('Bs.View.Collection', {
 	each: function (callback) {
 		var me = this;
 		for (var i = 0, item; item = me.items[i]; i++) {
-			callback(item, i);
+			if(callback(item, i) === false){
+				break;
+			}
 		}
 	}
 
