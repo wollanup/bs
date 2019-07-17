@@ -6715,6 +6715,9 @@ Bs.define('Bs.View.Modal', {
 				"onafterInitialize": function () {
 					var that = this;
 					that.one("ready", function (e) {
+						if(that.triggeredEvents && ('ready' in that.triggeredEvents)) {
+							delete that.triggeredEvents.ready;
+						}
 						if (e) {
 							// Store args received from initial ready event
 							var args = [];
