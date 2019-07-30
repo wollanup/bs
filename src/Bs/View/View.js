@@ -424,7 +424,8 @@ Bs.define('Bs.View', {
 		View.prototype.on = function (event, callback) {
 			callback = callback || function () {};
 			if (this.triggeredEvents.hasOwnProperty(event)) {
-				callback(null, this.triggeredEvents[event]);
+				this.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(this, this.triggeredEvents[event]);
 				delete this.triggeredEvents[event]
 			}
 			$(this).on(event, callback);
@@ -434,7 +435,9 @@ Bs.define('Bs.View', {
 
 		View.prototype.off = function (event) {
 			$(this).off(event);
-
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				delete this.triggeredEvents[event]
+			}
 			return this;
 		};
 
@@ -446,7 +449,8 @@ Bs.define('Bs.View', {
 		View.prototype.one = function (event, callback) {
 			callback = callback || function () {};
 			if (this.triggeredEvents.hasOwnProperty(event)) {
-				callback(null, this.triggeredEvents[event]);
+				this.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(this, this.triggeredEvents[event]);
 				delete this.triggeredEvents[event]
 			}
 			$(this).one(event, callback);
@@ -459,6 +463,9 @@ Bs.define('Bs.View', {
 		 * @param params
 		 */
 		View.prototype.trigger = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
 			this.triggeredEvents[event] = params;
 			$(this).trigger(event, params);
 
@@ -471,6 +478,9 @@ Bs.define('Bs.View', {
 		 * @param params
 		 */
 		View.prototype.triggerHandler = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
 			this.triggeredEvents[event] = params;
 			$(this).triggerHandler(event, params);
 

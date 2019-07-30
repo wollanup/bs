@@ -778,54 +778,76 @@ Bs.define('Bs.Model', {
 			return this.nameAsAProperty;
 		};
 
-        /**
-         *
-         * @param event
-         * @param callback
-         */
-        Model.prototype.on = function (event, callback) {
-            callback = callback || function () {};
-            if (this.triggeredEvents.hasOwnProperty(event)) {
-                callback(null, this.triggeredEvents[event]);
-                delete this.triggeredEvents[event]
-            }
-            $(this).on(event, callback);
+		/**
+		 *
+		 * @param event
+		 * @param callback
+		 */
+		Model.prototype.on = function (event, callback) {
+			callback = callback || function () {};
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				this.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(this, this.triggeredEvents[event]);
+				delete this.triggeredEvents[event]
+			}
+			$(this).on(event, callback);
 
-            return this;
-        };
+			return this;
+		};
 
-        Model.prototype.off = function (event) {
-            $(this).off(event);
+		Model.prototype.off = function (event) {
+			$(this).off(event);
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				delete this.triggeredEvents[event]
+			}
+			return this;
+		};
 
-            return this;
-        };
+		/**
+		 *
+		 * @param event
+		 * @param callback
+		 */
+		Model.prototype.one = function (event, callback) {
+			callback = callback || function () {};
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				this.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(this, this.triggeredEvents[event]);
+				delete this.triggeredEvents[event]
+			}
+			$(this).one(event, callback);
 
-        /**
-         *
-         * @param event
-         * @param callback
-         */
-        Model.prototype.one = function (event, callback) {
-            callback = callback || function () {};
-            if (this.triggeredEvents.hasOwnProperty(event)) {
-                callback(null, this.triggeredEvents[event]);
-                delete this.triggeredEvents[event]
-            }
-            $(this).one(event, callback);
+			return this;
+		};
+		/**
+		 *
+		 * @param event
+		 * @param params
+		 */
+		Model.prototype.trigger = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
+			this.triggeredEvents[event] = params;
+			$(this).trigger(event, params);
 
-            return this;
-        };
-        /**
-         *
-         * @param event
-         * @param params
-         */
-        Model.prototype.trigger = function (event, params) {
-            this.triggeredEvents[event] = params;
-            $(this).triggerHandler(event, params);
+			return this;
+		};
 
-            return this;
-        };
+		/**
+		 *
+		 * @param event
+		 * @param params
+		 */
+		Model.prototype.triggerHandler = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
+			this.triggeredEvents[event] = params;
+			$(this).triggerHandler(event, params);
+
+			return this;
+		};
 
         var _extend = function (child, parent, options) {
 
