@@ -27,7 +27,7 @@ Bs.define('Bs.View', {
 				};
 			_initialize.call(me, config).then(function () {
                 var init;
-                me.one("ready", function(){
+                $(me).one("ready", function(){
                     me.$el.addClass("bs-view-ready");
                 });
                 init = me.initialize(config);
@@ -422,13 +422,52 @@ Bs.define('Bs.View', {
 		 * @param callback
 		 */
 		View.prototype.on = function (event, callback) {
+			var me = this;
 			callback = callback || function () {};
-			if (this.triggeredEvents.hasOwnProperty(event)) {
-				this.triggeredEvents[event].unshift(new Event(event));
-				callback.apply(this, this.triggeredEvents[event]);
-				delete this.triggeredEvents[event]
+
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
 			}
-			$(this).on(event, callback);
+
+			// Standard behavior
+			$(me).on(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
+
+			return this;
+		};
+
+		/**
+		 *
+		 * @param event
+		 * @param callback
+		 */
+		View.prototype.one = function (event, callback) {
+			var me = this;
+			callback = callback || function () {};
+
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new Event(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
+			}
+
+			// Standard behavior
+			$(me).one(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
 
 			return this;
 		};
@@ -441,22 +480,6 @@ Bs.define('Bs.View', {
 			return this;
 		};
 
-		/**
-		 *
-		 * @param event
-		 * @param callback
-		 */
-		View.prototype.one = function (event, callback) {
-			callback = callback || function () {};
-			if (this.triggeredEvents.hasOwnProperty(event)) {
-				this.triggeredEvents[event].unshift(new Event(event));
-				callback.apply(this, this.triggeredEvents[event]);
-				delete this.triggeredEvents[event]
-			}
-			$(this).one(event, callback);
-
-			return this;
-		};
 		/**
 		 *
 		 * @param event
