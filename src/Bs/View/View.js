@@ -427,7 +427,7 @@ Bs.define('Bs.View', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}
@@ -455,7 +455,7 @@ Bs.define('Bs.View', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}

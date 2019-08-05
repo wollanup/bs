@@ -800,6 +800,16 @@ return Backend;
 				return -1;
 			};
 		}
+
+		if ( typeof window.CustomEvent !== "function" ) {
+			window.CustomEvent = function CustomEvent ( event, params ) {
+				params = params || { bubbles: false, cancelable: false, detail: undefined };
+				var evt = document.createEvent( 'CustomEvent' );
+				evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+				return evt;
+			};
+			window.CustomEvent.prototype = window.Event.prototype;
+		}
 	})();
 
 	var _async = false;
@@ -4276,7 +4286,7 @@ Bs.define('Bs.Model', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}
@@ -4304,7 +4314,7 @@ Bs.define('Bs.Model', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}
@@ -5480,7 +5490,7 @@ Bs.define('Bs.View', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}
@@ -5508,7 +5518,7 @@ Bs.define('Bs.View', {
 
 			// Give a chance to execute a "on" registered after trigger
 			if (me.triggeredEvents.hasOwnProperty(event)) {
-				me.triggeredEvents[event].unshift(new Event(event));
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
 				callback.apply(me, me.triggeredEvents[event]);
 				delete me.triggeredEvents[event]
 			}
