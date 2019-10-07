@@ -195,16 +195,20 @@ Bs.define('Bs.View.Collection', {
 		return dfd;
 	},
 
-	afterRender: function () {
-		// DO NOT TRIGGER READY, handled below
-	},
-
 	render: function () {
 		var me = this,
 			bindDataItems = me.bindData,
-			dfd = new $.Deferred();
+			dfd = new $.Deferred(),
+			afterRender;
 
 		me.bindData = false;
+
+		// Store afterRender Code (may be overwritten in subclasses)
+		afterRender = me.afterRender;
+		me.afterRender = function(){
+			// Empty afterRender to prevent code execution by trigger in View.prototype
+		};
+
 		Bs.View.prototype.render.call(me).then(function(){
 			me.bindData = bindDataItems;
 
@@ -222,11 +226,6 @@ Bs.define('Bs.View.Collection', {
 			}
 
 			me.renderCollection().then(function () {
-				dfd.resolve();
-				if(!me.options.preventReady) {
-					me.trigger('ready');
-				}
-
 				// Override default add/remove behavior for bound collections
 				if (me.bindData) {
 					var previousAddFn = me.getCollection().add;
@@ -244,6 +243,10 @@ Bs.define('Bs.View.Collection', {
 						me.renderCollection();
 						return model;
 					}
+				}
+				dfd.resolve();
+				if(!me.options.preventReady) {
+					afterRender.call(me);
 				}
 			});
 		});
