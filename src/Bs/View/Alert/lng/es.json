@@ -1,0 +1,26 @@
+{
+  "info": {
+    "title": "Información",
+    "msg": {
+      "nothing" : "Nada que modificar"
+    }
+  },
+  "success": {
+    "title": "Terminado",
+    "msg": {
+      "saved": "Modificación realizada",
+      "default": "Operación exitosa"
+    }
+  },
+  "warning": {
+    "title": "Atención"
+  },
+  "danger": {
+    "title": "Oups",
+    "msg": {
+      "notSaved": "Los cambios no se pudieron guardar",
+      "notFetched": "El servidor no devolvió los datos esperados.",
+      "default": "Ha ocurrido un error"
+    }
+  }
+}
