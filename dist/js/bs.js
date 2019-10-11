@@ -7120,10 +7120,6 @@ Bs.define('Bs.View.Collection', {
 	 */
 	hasStylesheet : false,
 
-	options : {
-		preventReady: false
-	},
-
 	data: {
 		$elCollection     : null,
 		$elEmptyCollection: null
@@ -7276,9 +7272,7 @@ Bs.define('Bs.View.Collection', {
 					}
 				}
 				dfd.resolve();
-				if(!me.options.preventReady) {
-					afterRender.call(me);
-				}
+				afterRender.call(me);
 			});
 		});
 		return dfd;
