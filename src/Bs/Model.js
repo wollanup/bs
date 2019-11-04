@@ -778,54 +778,94 @@ Bs.define('Bs.Model', {
 			return this.nameAsAProperty;
 		};
 
-        /**
-         *
-         * @param event
-         * @param callback
-         */
-        Model.prototype.on = function (event, callback) {
-            callback = callback || function () {};
-            if (this.triggeredEvents.hasOwnProperty(event)) {
-                callback(null, this.triggeredEvents[event]);
-                delete this.triggeredEvents[event]
-            }
-            $(this).on(event, callback);
+		Model.prototype.on = function (event, callback) {
+			var me = this;
+			callback = callback || function () {};
 
-            return this;
-        };
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
+			}
 
-        Model.prototype.off = function (event) {
-            $(this).off(event);
+			// Standard behavior
+			$(me).on(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
 
-            return this;
-        };
+			return this;
+		};
 
-        /**
-         *
-         * @param event
-         * @param callback
-         */
-        Model.prototype.one = function (event, callback) {
-            callback = callback || function () {};
-            if (this.triggeredEvents.hasOwnProperty(event)) {
-                callback(null, this.triggeredEvents[event]);
-                delete this.triggeredEvents[event]
-            }
-            $(this).one(event, callback);
+		/**
+		 *
+		 * @param event
+		 * @param callback
+		 */
+		Model.prototype.one = function (event, callback) {
+			var me = this;
+			callback = callback || function () {};
 
-            return this;
-        };
-        /**
-         *
-         * @param event
-         * @param params
-         */
-        Model.prototype.trigger = function (event, params) {
-            this.triggeredEvents[event] = params;
-            $(this).triggerHandler(event, params);
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
+			}
 
-            return this;
-        };
+			// Standard behavior
+			$(me).one(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
+
+			return this;
+		};
+
+		Model.prototype.off = function (event) {
+			$(this).off(event);
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				delete this.triggeredEvents[event]
+			}
+			return this;
+		};
+
+		/**
+		 *
+		 * @param event
+		 * @param params
+		 */
+		Model.prototype.trigger = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
+			this.triggeredEvents[event] = params;
+			$(this).trigger(event, params);
+
+			return this;
+		};
+
+		/**
+		 *
+		 * @param event
+		 * @param params
+		 */
+		Model.prototype.triggerHandler = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
+			this.triggeredEvents[event] = params;
+			$(this).triggerHandler(event, params);
+
+			return this;
+		};
 
         var _extend = function (child, parent, options) {
 

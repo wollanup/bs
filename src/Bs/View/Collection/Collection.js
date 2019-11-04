@@ -89,10 +89,6 @@ Bs.define('Bs.View.Collection', {
 	 */
 	hasStylesheet : false,
 
-	options : {
-		preventReady: false
-	},
-
 	data: {
 		$elCollection     : null,
 		$elEmptyCollection: null
@@ -195,16 +191,20 @@ Bs.define('Bs.View.Collection', {
 		return dfd;
 	},
 
-	afterRender: function () {
-		// DO NOT TRIGGER READY, handled below
-	},
-
 	render: function () {
 		var me = this,
 			bindDataItems = me.bindData,
-			dfd = new $.Deferred();
+			dfd = new $.Deferred(),
+			afterRender;
 
 		me.bindData = false;
+
+		// Store afterRender Code (may be overwritten in subclasses)
+		afterRender = me.afterRender;
+		me.afterRender = function(){
+			// Empty afterRender to prevent code execution by trigger in View.prototype
+		};
+
 		Bs.View.prototype.render.call(me).then(function(){
 			me.bindData = bindDataItems;
 
@@ -222,11 +222,6 @@ Bs.define('Bs.View.Collection', {
 			}
 
 			me.renderCollection().then(function () {
-				dfd.resolve();
-				if(!me.options.preventReady) {
-					me.trigger('ready');
-				}
-
 				// Override default add/remove behavior for bound collections
 				if (me.bindData) {
 					var previousAddFn = me.getCollection().add;
@@ -245,6 +240,8 @@ Bs.define('Bs.View.Collection', {
 						return model;
 					}
 				}
+				dfd.resolve();
+				afterRender.call(me);
 			});
 		});
 		return dfd;
@@ -253,15 +250,49 @@ Bs.define('Bs.View.Collection', {
 	/**
 	 *
 	 * @param [data]
+	 * @param viewOptions
 	 * @returns {View}
 	 */
-	addItem : function(data){
+	addItem : function(data, viewOptions){
 		var me = this;
 		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
 			me.data.$elEmptyCollection.empty();
 		}
 
-		return me.renderOne(me.getCollection().add(data));
+		return me.renderOne(me.getCollection().add(data), viewOptions);
+	},
+
+	/**
+	 *
+	 * @param [data]
+	 * @param viewOptions
+	 * @returns {View}
+	 */
+	prependItem : function(data, viewOptions){
+		var me = this;
+		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
+			me.data.$elEmptyCollection.empty();
+		}
+		var $tmp = $('<div></div>');
+		var view = me.renderOne(me.getCollection().add(data), viewOptions, $tmp);
+		me.data.$elCollection.prepend($tmp.children()[0]);
+		return view
+	},
+	/**
+	 *
+	 * @param {Model} model
+	 * @returns {View}
+	 */
+	removeItem : function(model){
+		var me = this, view;
+		me.getCollection().remove(model);
+		view = me.itemsByPk[model.get('id')];
+		view.destroy();
+		if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
+			me.renderEmptyCollection();
+		}
+
+		return view;
 	},
 	/**
 	 *
@@ -279,12 +310,13 @@ Bs.define('Bs.View.Collection', {
 		return view;
 	},
 
-	renderOne: function (model) {
+	renderOne: function (model, viewOptions, $el) {
 		var me = this;
 		me.viewOptions = me.viewOptions || {};
-		var options = $.extend(true, {}, me.viewOptions, {
+		viewOptions = viewOptions || {};
+		var options = $.extend(true, {}, me.viewOptions, viewOptions, {
 			"bindData"       : me.bindData,
-			"renderTo"       : me.data.$elCollection,
+			"renderTo"       : $el || me.data.$elCollection,
 			"model"          : model,
 			getCollection    : function () {
 				return me.getCollection();

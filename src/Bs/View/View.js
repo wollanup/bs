@@ -27,7 +27,7 @@ Bs.define('Bs.View', {
 				};
 			_initialize.call(me, config).then(function () {
                 var init;
-                me.one("ready", function(){
+                $(me).one("ready", function(){
                     me.$el.addClass("bs-view-ready");
                 });
                 init = me.initialize(config);
@@ -411,6 +411,7 @@ Bs.define('Bs.View', {
 		 */
 		View.prototype.setModel = function (model) {
 			this.model[model.getNameAsAProperty()] = model;
+			this.model[model.className] = model;
 
 			return this;
 		};
@@ -421,18 +422,24 @@ Bs.define('Bs.View', {
 		 * @param callback
 		 */
 		View.prototype.on = function (event, callback) {
+			var me = this;
 			callback = callback || function () {};
-			if (this.triggeredEvents.hasOwnProperty(event)) {
-				callback(null, this.triggeredEvents[event]);
-				delete this.triggeredEvents[event]
+
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
 			}
-			$(this).on(event, callback);
 
-			return this;
-		};
-
-		View.prototype.off = function (event) {
-			$(this).off(event);
+			// Standard behavior
+			$(me).on(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
 
 			return this;
 		};
@@ -443,21 +450,45 @@ Bs.define('Bs.View', {
 		 * @param callback
 		 */
 		View.prototype.one = function (event, callback) {
+			var me = this;
 			callback = callback || function () {};
-			if (this.triggeredEvents.hasOwnProperty(event)) {
-				callback(null, this.triggeredEvents[event]);
-				delete this.triggeredEvents[event]
+
+			// Give a chance to execute a "on" registered after trigger
+			if (me.triggeredEvents.hasOwnProperty(event)) {
+				me.triggeredEvents[event].unshift(new CustomEvent(event));
+				callback.apply(me, me.triggeredEvents[event]);
+				delete me.triggeredEvents[event]
 			}
-			$(this).one(event, callback);
+
+			// Standard behavior
+			$(me).one(event, function(){
+				// Remove triggered event to avoid duplicate execution in some cases
+				if (me.triggeredEvents.hasOwnProperty(event)) {
+					delete this.triggeredEvents[event]
+				}
+				callback.apply(me, arguments);
+			});
 
 			return this;
 		};
+
+		View.prototype.off = function (event) {
+			$(this).off(event);
+			if (this.triggeredEvents.hasOwnProperty(event)) {
+				delete this.triggeredEvents[event]
+			}
+			return this;
+		};
+
 		/**
 		 *
 		 * @param event
 		 * @param params
 		 */
 		View.prototype.trigger = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
 			this.triggeredEvents[event] = params;
 			$(this).trigger(event, params);
 
@@ -470,6 +501,9 @@ Bs.define('Bs.View', {
 		 * @param params
 		 */
 		View.prototype.triggerHandler = function (event, params) {
+			if (!$.isArray(params)) {
+				params = [params];
+			}
 			this.triggeredEvents[event] = params;
 			$(this).triggerHandler(event, params);
 
