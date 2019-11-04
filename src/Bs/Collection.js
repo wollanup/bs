@@ -495,7 +495,11 @@ Bs.define('Bs.Collection', {
 						r = new Bs.Response(rPost[0]);
 					}
 					else {
-						r = new Bs.Response(rPatch[0]);
+						if(rPatch) {
+							r = new Bs.Response(rPatch[0]);
+						} else if(rDelete){
+							r = new Bs.Response(rDelete[0]);
+						}
 					}
 
 					callback.done(r);
