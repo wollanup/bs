@@ -1147,7 +1147,7 @@ Bs.define('Bs.View', {
 				(function (view, event, fn, target, origin) {
 					// LISTENER
 					origin.on(event, target, function (e) {
-						var args = $.extend(true, [], arguments);
+						var args = Array.prototype.slice.call(arguments);
 						args.push(this);
 						fn.apply(view, args);
 					});
