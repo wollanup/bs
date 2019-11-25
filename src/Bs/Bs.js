@@ -309,16 +309,12 @@
 		}
 
 		var dependencies,
-			dfdRequiredLib,
 			requiredDependencies;
 
 		_log(className + ' is being defined, check for dependencies');
 
 		definition = $.extend({}, _definition, definition);
 		definition.require = _arrayFromString(definition.require);
-
-		// Libs
-		dfdRequiredLib = _requireLib(definition.requireLib);
 
 		// Build array of dependencies (require + extend)
 		dependencies = definition.require;
@@ -344,7 +340,7 @@
 		}
 
 		// When all dependencies are loaded, we can finalize define
-		$.when(_dependencies[className].dfdRequire, dfdRequiredLib).then(function () {
+		$.when(_dependencies[className].dfdRequire).then(function () {
 			_log('All dependencies have been loaded for ' + className);
 
 			if (definition.extend) {
