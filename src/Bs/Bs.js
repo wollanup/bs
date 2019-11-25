@@ -276,7 +276,7 @@
 			for (lib in libs) {
 				if (libs.hasOwnProperty(lib)) {
 					(function (oneLib) {
-						var url = _config.urlApp + '/' + libs[oneLib];
+						var url = libs[oneLib];
 						_getScript(url)
 							.done(function () {
 								_storeLib[oneLib] = true;
@@ -562,6 +562,13 @@
 			}
 		}
 	};
+
+	Bs.requireLib = function(url){
+		var obj = {};
+		obj[url] = url;
+		return _requireLib(obj);
+	};
+
 
 	var _dev = false;
 
