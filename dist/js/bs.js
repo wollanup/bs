@@ -795,17 +795,41 @@ this["Handlebars"]["templates"]["Bs/View/Loading/loading"] = Handlebars.template
 },"useData":true});
 
 this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
-    return "						<button type=\"button\" class=\"close pull-right view-close\" data-dismiss=\"modal\"\n						        aria-label=\"Close\">\n							<small class=\"text-uppercase\" data-i18n=\"close\"></small>\n							<small class=\"fa fa-times\"></small>\n						</button>\n";
+    return "movable";
 },"3":function(container,depth0,helpers,partials,data) {
+    return "                        <button type=\"button\" class=\"close pull-right view-close\" data-dismiss=\"modal\"\n                                aria-label=\"Close\">\n                            <small class=\"text-uppercase\" data-i18n=\"close\"></small>\n                            <small class=\"fa fa-times\"></small>\n                        </button>\n";
+},"5":function(container,depth0,helpers,partials,data) {
     return "no-padding";
-},"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {});
+},"7":function(container,depth0,helpers,partials,data) {
+    var stack1;
 
-  return "<div class=\"modal fade\">\n	<div class=\"modal-dialog\">\n		<div class=\"modal-content\">\n			<div class=\"modal-header\">\n				<h4 class=\"modal-title text-primary\">\n					<span class=\"modal-title-main\" data-i18n=\"title\"></span>\n					<small class=\"modal-title-sub\" data-i18n=\"subTitle\"></small>\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.closable : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":8,"column":5},"end":{"line":14,"column":12}}})) != null ? stack1 : "")
-    + "				</h4>\n			</div>\n			<div class=\"modal-body "
-    + ((stack1 = helpers.unless.call(alias1,(depth0 != null ? depth0.bodyPadding : depth0),{"name":"unless","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":26},"end":{"line":17,"column":70}}})) != null ? stack1 : "")
-    + "\">\n				<div class=\"modal-icon-wrap\">\n					<i class=\"modal-icon text-primary\"></i>\n				</div>\n				<div class=\"view-content\" data-create></div>\n			</div>\n		</div>\n	</div>\n</div>\n";
+  return "                        <div class=\"media\">\n"
+    + ((stack1 = container.invokePartial((helpers.getMediaInfoPartial||(depth0 && depth0.getMediaInfoPartial)||container.hooks.helperMissing).call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"getMediaInfoPartial","hash":{},"data":data,"loc":{"start":{"line":24,"column":32},"end":{"line":24,"column":53}}}),depth0,{"data":data,"indent":"                            ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + "                        </div>\n";
+},"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {});
+
+  return "<div class=\"modal fade\">\n    <div class=\"modal-dialog modal-"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.size : stack1), depth0))
+    + "\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header "
+    + ((stack1 = helpers["if"].call(alias3,((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.movable : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":37},"end":{"line":4,"column":74}}})) != null ? stack1 : "")
+    + "\">\n                <h4 class=\"modal-title text-primary\">\n                    <span class=\"modal-title-main\">"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.title : stack1), depth0))
+    + "</span>\n                    <small class=\"modal-title-sub\">"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.subTitle : stack1), depth0))
+    + "</small>\n"
+    + ((stack1 = helpers["if"].call(alias3,((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.closable : stack1),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":8,"column":20},"end":{"line":14,"column":27}}})) != null ? stack1 : "")
+    + "                </h4>\n            </div>\n            <div class=\"modal-body "
+    + ((stack1 = helpers.unless.call(alias3,((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.bodyPadding : stack1),{"name":"unless","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":35},"end":{"line":17,"column":87}}})) != null ? stack1 : "")
+    + "\">\n                <div class=\"modal-icon-wrap\">\n                    <i class=\"modal-icon text-primary "
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.icon : stack1), depth0))
+    + "\"></i>\n                </div>\n                <div class=\"modal-content-wrap\">\n"
+    + ((stack1 = helpers["if"].call(alias3,((stack1 = (depth0 != null ? depth0.options : depth0)) != null ? stack1.mediaInfo : stack1),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":22,"column":20},"end":{"line":26,"column":27}}})) != null ? stack1 : "")
+    + "                    <div class=\"view-content\" data-create></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n";
+},"usePartial":true,"useData":true});
+
+this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.template({"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<button type=\"button\" class=\"view-close btn btn-link\" data-i18n=\"action.cancel\"></button>\n";
 },"useData":true});
 +function ($) {
 	'use strict';
@@ -6798,42 +6822,77 @@ Bs.define('Bs.View.Modal', {
 	hasTranslation: false,
 	autoMask      : false,
 	options       : {
-		view       : "",
-		content    : "",
-		title      : "",
-		subTitle   : "",
-		icon       : "",
+		view           : '',
+		viewOptions    : null,
+		title          : '',
+		icon           : '',
+		autofocus      : true,
 		/**
-		 * Available sizes are "sm" and "lg"
+		 * Available sizes are "sm" and "lg" and "max"
 		 */
-		size       : "",
-		bodyPadding: true,
-		viewOptions: null,
-		closable   : true,
-		backdrop   : 'static',
-		data:{
-			readyArgs:[]
+		size           : 'default',
+		bodyPadding    : true,
+		closable       : true,
+		backdrop       : 'static',
+		cancelBtnBefore: '[type=submit]',
+		movable        : true,
+		mediaInfo      : false // or string, name of partial
+	},
+	data          : {
+		readyArgs: []
+	},
+
+	initialize: function () {
+		var me = this;
+
+		if (me.options.movable && !$.fn.draggable) {
+			me.options.movable = false;
+		}
+
+		if (me.options.mediaInfo) {
+			return me.getPartial(me.options.mediaInfo);
 		}
 	},
 
+	getTplData: function () {
+		var me = this;
+		return {
+			options            : me.options,
+			getMediaInfoPartial: function () {
+				return me.urlPath + '/tpl/' + me.options.mediaInfo;
+			},
+			model : me.getModel()
+		};
+	},
+
 	beforeCreateSubView: function () {
-		var me = this,
-			$modal = me.$el.find('.modal');
+		var me = this, $modal = me.$el.find('.modal'), model;
+
+		if (me.options.viewOptions !== null && 'model' in me.options.viewOptions && me.options.viewOptions.model) {
+			model = me.options.viewOptions.model;
+		}
+		else {
+			model = me.getModel();
+		}
 
 		if (me.options.view) {
-			var options = $.extend(true, {
-				"onbeforeDestroy"  : function () {
+			var options = $.extend(true, {}, me.options.viewOptions, {
+				'model'            : model,
+				'onbeforeDestroy'  : function () {
 					// Before destroying the subview, hide th modal container
 					$modal.modal('hide');
+				},
+				'close'            : function () {
+					me.destroy();
 				},
 				/**
 				 * Override default "ready" behavior, prevent it,
 				 * it will be fired again after modal will be shown
 				 */
-				"onafterInitialize": function () {
+				'onafterInitialize': function () {
 					var that = this;
-					that.one("ready", function (e) {
-						if(that.triggeredEvents && ('ready' in that.triggeredEvents)) {
+					that.one('ready', function (e) {
+						if (that.triggeredEvents && ('ready' in that.triggeredEvents)) {
 							delete that.triggeredEvents.ready;
 						}
 						if (e) {
@@ -6863,36 +6922,18 @@ Bs.define('Bs.View.Modal', {
 		}
 	},
 
-	close: function () {
-		$(window).off("resize", this.resize);
-		this.$el.find('.modal').modal('hide');
-	},
-
-	resize: function () {
-		// padding 2 * 30
-		// header 56
-		// borders 4 to be safe
-		this.$el.find(".view-content").css({height: $(window).height() - 120});
-	},
-
 	afterRender: function () {
 
 		var me = this,
 			$modal = me.$el.find('.modal');
 
-		if (me.options.size !== "") {
-			$modal.find('.modal-dialog').addClass('modal-' + me.options.size)
-		}
 
 		$modal.one('hidden.bs.modal', function () {
 			me.destroy();
 		});
 
-		$modal.find('.modal-title-main').html(me.options.title);
-		$modal.find('.modal-title-sub').html(me.options.subTitle);
-		$modal.find('.modal-icon').addClass(me.options.icon);
+
 		$modal.one('shown.bs.modal', function () {
-			var flexSupport = (window['Modernizr'] && Modernizr.flexbox);
 			for (var view in me.subViewList) {
 				// re-trigger previously prevented "ready" event on subViews
 				if (me.subViewList.hasOwnProperty(view)) {
@@ -6901,18 +6942,14 @@ Bs.define('Bs.View.Modal', {
 				}
 			}
 			// In case, focus first input if exists
-			me.$el.find('.view-content').find('input').first().focus().select();
-
+			if (me.options.autofocus === true) {
+				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().focus().select();
+			}
 			// Draggable
 			if ($.fn.draggable) {
-				$(me.$el.find(".modal-content")).draggable({
-					handle: ".modal-header"
+				$(me.$el.find('.modal-content')).draggable({
+					handle: '.modal-header'
 				});
-			}
-
-			if (me.options.size === Bs.View.Modal.SIZE_MAX && !flexSupport) {
-				$(window).on("resize", $.proxy(me.resize, me));
-				me.resize();
 			}
 
 			me.trigger('ready');
@@ -6921,27 +6958,42 @@ Bs.define('Bs.View.Modal', {
 		$modal.modal({
 			backdrop: me.options.backdrop,
 			keyboard: me.options.closable
-		}).css({"z-index": 1051 + me.zIndex});
+		}).css({ 'z-index': 1051 + me.zIndex });
 
-		$modal.data('bs.modal').$backdrop.css({"z-index": 1050 + me.zIndex});
+		$modal.data('bs.modal').$backdrop.css({ 'z-index': 1050 + me.zIndex });
+
+		me.renderCancelBtn();
 	},
 
-	mask : function(text){
+	mask: function (text) {
 		return Bs.View.prototype.mask.call(this, text, this.$el.find('.modal-body'));
 	},
-	unmask : function(noFade, callback){
+
+	unmask: function (noFade, callback) {
 		return Bs.View.prototype.unmask.call(this, this.$el.find('.modal-body'), noFade, callback);
 	},
-	events: {
-		"click .view-close": function () {
-			this.$el.find('.modal').modal('hide');
+
+	close: function () {
+		this.$el.find('.modal').modal('hide');
+	},
+
+	renderCancelBtn: function () {
+		var me = this;
+		if (me.options.cancelBtnBefore) {
+			Bs.View.Modal.prototype.renderCompiledTpl('cancelBtn', function (html) {
+				me.$el.find(me.options.cancelBtnBefore).first().before(html);
+			});
 		}
+	},
+
+	events: {
+		'click .view-close': 'close'
 	}
+
 }, function () {
 	Bs.View.Modal.SIZE_SMALL = "sm";
 	Bs.View.Modal.SIZE_LARGE = "lg";
 	Bs.View.Modal.SIZE_MAX = "max";
-	Bs.View.Modal.SIZE_FULL_WIDTH = "fullWidth";
 	Bs.View.Modal.SIZE_DEFAULT = "";
 });
 

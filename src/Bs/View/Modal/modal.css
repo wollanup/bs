@@ -1,69 +1,85 @@
-.bs-view-modal .modal-icon-wrap {
-	overflow : hidden;
-	position : absolute;
-	top      : 0;
-	bottom   : 0;
-	left     : 0;
-	right    : 0;
+.bs-view-modal .modal-content-wrap {
+	position: relative;
+	z-index: 1;
 }
+
+.bs-view-modal .modal-header.movable:hover {
+	cursor: move;
+}
+
+.bs-view-modal .modal-icon-wrap {
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
 .bs-view-modal .modal-icon {
-	position  : absolute;
+	position: absolute;
 	top       : 0;
 	right     : 15px;
 	font-size : 20em;
 	opacity   : .1;
 }
+
 .bs-view-modal .view-content {
-	position : relative;
-	z-index  : 1;
-}
-.bs-view-modal .close small {
-	vertical-align : middle;
-}
-.bs-view-modal .modal-body.no-padding {
-	padding : 0
+	position: relative;
+	z-index: 1;
 }
 
-.bs-view-modal .modal-dialog.modal-fullWidth {
+.bs-view-modal .close {
+	padding: 2px 5px;
+}
+
+.bs-view-modal .modal-body.no-padding {
+	padding: 0
+}
+
+.bs-view-modal .media {
+	padding-bottom: 15px
+}
+
+/* Modal MAX flex */
+.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max {
 	width: auto;
-	margin: 30px;
+	position: absolute;
+	top: 30px;
+	bottom: 30px;
+	left: 30px;
+	right: 30px;
+	margin: 0;
+}
+
+.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max .modal-content {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max .modal-body {
+	overflow: auto;
+	flex: 1
+}
+
+.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max .modal-content-wrap,
+.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max .view-content {
+	height: 100%;
 }
 
 @media screen and (max-width: 768px) {
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog {
+	.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog,
+	.m_flexbox.m_flexwrap .bs-view-modal .modal-dialog.modal-max {
 		margin: 0;
-		height: 100%;
+		width: auto;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 	}
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-content {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-body {
-		flex: 1;
-		overflow: auto;
-	}
-	.m_flexbox.m_flexwrap .bs-view-modal .view-content {
-		height: 100% !important;
-	}
-}
-@media screen and (min-width: 769px) {
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-max {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 30px;
-	}
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-content {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-	.m_flexbox.m_flexwrap .bs-view-modal .modal-body {
-		flex: 1;
-	}
-	.m_flexbox.m_flexwrap .bs-view-modal .view-content {
-		height: 100% !important;
-	}
-}
 
+	.m_flexbox.m_flexwrap .bs-view-modal .modal-content {
+		border-radius: 0;
+	}
+}

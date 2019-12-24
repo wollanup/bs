@@ -1,25 +1,32 @@
 <div class="modal fade">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title text-primary">
-					<span class="modal-title-main" data-i18n="title"></span>
-					<small class="modal-title-sub" data-i18n="subTitle"></small>
-					{{#if closable}}
-						<button type="button" class="close pull-right view-close" data-dismiss="modal"
-						        aria-label="Close">
-							<small class="text-uppercase" data-i18n="close"></small>
-							<small class="fa fa-times"></small>
-						</button>
-					{{/if}}
-				</h4>
-			</div>
-			<div class="modal-body {{#unless bodyPadding}}no-padding{{/unless}}">
-				<div class="modal-icon-wrap">
-					<i class="modal-icon text-primary"></i>
-				</div>
-				<div class="view-content" data-create></div>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-{{options.size}}">
+        <div class="modal-content">
+            <div class="modal-header {{#if options.movable}}movable{{/if}}">
+                <h4 class="modal-title text-primary">
+                    <span class="modal-title-main">{{options.title}}</span>
+                    <small class="modal-title-sub">{{options.subTitle}}</small>
+                    {{#if options.closable}}
+                        <button type="button" class="close pull-right view-close" data-dismiss="modal"
+                                aria-label="Close">
+                            <small class="text-uppercase" data-i18n="close"></small>
+                            <small class="fa fa-times"></small>
+                        </button>
+                    {{/if}}
+                </h4>
+            </div>
+            <div class="modal-body {{#unless options.bodyPadding}}no-padding{{/unless}}">
+                <div class="modal-icon-wrap">
+                    <i class="modal-icon text-primary {{options.icon}}"></i>
+                </div>
+                <div class="modal-content-wrap">
+                    {{#if options.mediaInfo}}
+                        <div class="media">
+                            {{> (getMediaInfoPartial) }}
+                        </div>
+                    {{/if}}
+                    <div class="view-content" data-create></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
