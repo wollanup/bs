@@ -77,9 +77,6 @@ Bs.define('Bs.View.Modal', {
 					// Before destroying the subview, hide th modal container
 					$modal.modal('hide');
 				},
-				'close'            : function () {
-					me.destroy();
-				},
 				/**
 				 * Override default "ready" behavior, prevent it,
 				 * it will be fired again after modal will be shown
