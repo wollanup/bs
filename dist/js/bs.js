@@ -6822,6 +6822,7 @@ Bs.define('Bs.View.Modal', {
 	hasTranslation: false,
 	autoMask      : false,
 	options       : {
+		content        : '',
 		view           : '',
 		viewOptions    : null,
 		title          : '',
