@@ -24,7 +24,7 @@ Bs.define('Bs.Api', {
 		 * @return {string}
 		 */
 		var _buildUrl = function (path) {
-			if(path.match(/http|https|\/\//)){
+			if(path && path.match(/http|https|\/\//)){
 				return path;
 			}
 			var url =  Bs.getConfig().api;
