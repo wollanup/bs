@@ -64,6 +64,19 @@ Bs.define('Bs.Collection', {
 		Collection.prototype.id = 'collection';
 
 		/**
+		 * Class name of the Response handler
+		 * @type {string}
+		 */
+		Collection.prototype.apiResponseHandler = 'Bs.Response';
+
+		/**
+		 * Api HTTP headers
+		 *
+		 * @type {string}
+		 */
+		Collection.prototype.apiHeaders = {};
+
+		/**
 		 * Method identifier for API calls (myMethod)
 		 * @type {string}
 		 */
@@ -317,7 +330,9 @@ Bs.define('Bs.Collection', {
 				apiMethod = options.apiMethod || me.apiMethod,
 				apiAction = options.apiAction || me.apiAction,
 				apiResource = options.apiResource || me.apiResource,
-				apiRoute = options.apiRoute || me.apiRoute;
+				apiRoute = options.apiRoute || me.apiRoute,
+				apiHeaders = options.apiHeaders || me.apiHeaders,
+				apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler;
 
 			callback.done = function (response) {
 				if (me.cache) {
@@ -353,7 +368,13 @@ Bs.define('Bs.Collection', {
 			apiParams.sort = sort || null;
 			apiParams.filter = filter || null;
 
-			return Bs.Api[apiMethod.toLowerCase()](url, apiParams, callback);
+			var api = new Bs.Api({
+				headers: apiHeaders,
+				responseHandler: apiResponseHandler
+			});
+
+
+			return api[apiMethod.toLowerCase()](url, apiParams, callback);
 		};
 
 		/**
