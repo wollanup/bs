@@ -56,6 +56,19 @@ Bs.define('Bs.Model', {
 		Model.prototype.id = 'model';
 
 		/**
+		 * Class name of the Response handler
+		 * @type {string}
+		 */
+		Model.prototype.apiResponseHandler = 'Bs.Response';
+
+		/**
+		 * Api HTTP headers
+		 *
+		 * @type {Object}
+		 */
+		Model.prototype.apiHeaders = {};
+
+		/**
 		 * Resource identifier for API calls (myclass)
 		 * @type {string}
 		 */
@@ -562,6 +575,8 @@ Bs.define('Bs.Model', {
 				apiAction,
 				apiRoute,
 				apiResource,
+				apiHeaders,
+				apiResponseHandler,
 				pk;
 
 			options = options || {};
@@ -571,6 +586,9 @@ Bs.define('Bs.Model', {
 			apiAction = options.apiAction || me.apiAction;
 			apiRoute = options.apiRoute || me.apiRoute;
 			apiResource = options.apiResource || me.apiResource;
+			apiHeaders = options.apiHeaders || me.apiHeaders;
+			apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler;
+
 			pk = options.pk || this.getPK(true);
 
 			callback.done = function (response) {
@@ -591,7 +609,12 @@ Bs.define('Bs.Model', {
 				url = apiResource + pk + apiAction;
 			}
 
-			return Bs.Api.get(url, apiParams, callback);
+			var api = new Bs.Api({
+				headers: apiHeaders,
+				responseHandler: apiResponseHandler
+			});
+
+			return api.get(url, apiParams, callback);
 		};
 
 		/**

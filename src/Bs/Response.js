@@ -268,7 +268,7 @@ Bs.define('Bs.Response', {
 
 		};
 
-		Response.define = function (className, options, cb) {
+		Response.define = function (className, options, callback) {
 			var parent = this,
 				Surrogate = function Response() {
 				};
@@ -282,7 +282,7 @@ Bs.define('Bs.Response', {
 			$.extend(Response.prototype, parent.prototype, options);
 
 			if (Bs.isAsync()) {
-				cb(Response)
+				callback(Response)
 			} else {
 				return Response
 			}

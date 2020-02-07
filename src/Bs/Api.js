@@ -86,57 +86,42 @@ Bs.define('Bs.Api', {
 		var _ajax = function (callback, options) {
 			var config;
 
+			options = options || {};
 			callback = _buildCallbackObject(callback);
 
-			config = {
-                type    : "GET",
-                url     : "",
-                data    : null,
-                dataType: "json",
-                headers: _headers
-			};
-
-			$.extend(config, options);
-
-			var _handleAjaxAlways = function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
-				var data = (textStatus !== "success") ? dataOrJqXHR.responseJSON : dataOrJqXHR,
-					jqXHR = (textStatus !== "success") ? dataOrJqXHR : jqXHROrErrorThrown,
-					response = Bs.create(options.responseHandler, data);
-				if (response.hasComponent()) {
-					response.requireComponent(function (className) {
-						console.info('Server response requires a component');
-						callback.loadComponent(className, response);
-					});
-					if (response.hasForkComponent()) {
-						return;
-					}
-				}
-
-				jqXHR.done(function () {
-					callback.done(response);
-				});
-
-				jqXHR.fail(function () {
-					callback.fail(response, jqXHR);
-				});
-
-				jqXHR.always(function () {
-					callback.always(response);
-				});
-
-				jqXHR.then(function () {
-					callback.then(response);
-				});
-			};
+			config = $.extend({}, _config, options);
 
 			return $.ajax(config).always(function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
-				if (options.responseHandler !== 'Bs.Response') {
-					Bs.require(options.responseHandler, function() {
-						_handleAjaxAlways(dataOrJqXHR, textStatus, jqXHROrErrorThrown);
-					})
-				} else {
-					_handleAjaxAlways(dataOrJqXHR, textStatus, jqXHROrErrorThrown);
-				}
+				Bs.require(config.responseHandler, function() {
+					var data = (textStatus !== 'success') ? dataOrJqXHR.responseJSON : dataOrJqXHR,
+						jqXHR = (textStatus !== 'success') ? dataOrJqXHR : jqXHROrErrorThrown,
+						response = Bs.create(config.responseHandler, data);
+					if (response.hasComponent()) {
+						response.requireComponent(function (className) {
+							console.info('Server response requires a component');
+							callback.loadComponent(className, response);
+						});
+						if (response.hasForkComponent()) {
+							return;
+						}
+					}
+
+					jqXHR.done(function () {
+						callback.done(response);
+					});
+
+					jqXHR.fail(function () {
+						callback.fail(response, jqXHR);
+					});
+
+					jqXHR.always(function () {
+						callback.always(response);
+					});
+
+					jqXHR.then(function () {
+						callback.then(response);
+					});
+				});
 			});
 		};
 
@@ -147,11 +132,27 @@ Bs.define('Bs.Api', {
 		 */
 		var _headers = {};
 
-        /**
-         * Initializes a new instance of Api.
-         * @constructs Bs.Api
-         */
-        function Api() {
+		/**
+		 * Response handler class
+		 * @type {Object}
+		 * @private
+		 */
+		var _responseHandler = "Bs.Response";
+
+		var _config = {
+			type           : 'GET',
+			url            : '',
+			data           : null,
+			dataType       : 'json',
+			headers        : _headers,
+			responseHandler: _responseHandler
+		};
+
+		/**
+		 * Initializes a new instance of Api.
+		 * @constructs Bs.Api
+		 */
+		function Api (options) {
 			this.headers = {};
 			$.extend(true, this, options);
 		}
@@ -184,14 +185,24 @@ Bs.define('Bs.Api', {
 			}
 
 			return _ajax(callback, {
-				type: "GET",
-				url: _buildUrl(url),
-				data: data,
-				dataType: "json",
+				type           : 'GET',
+				url            : _buildUrl(url),
+				data           : data,
+				dataType       : 'json',
 				responseHandler: this.responseHandler,
-				headers: this.headers
+				headers        : this.headers
 			});
+		};
 
+		/**
+		 * Call API
+		 *
+		 * @param options
+		 * @param callback
+		 * @returns {*}
+		 */
+		Api.prototype.call = function (options, callback) {
+			return _ajax(callback, options);
 		};
 		/**
 		 *
@@ -398,12 +409,6 @@ Bs.define('Bs.Api', {
 			return _buildUrl(path);
 		};
 
-        /**
-         *
-         * @param options
-         * @param [callback]
-         * @return {*}
-         */
 		/**
 		 *
 		 * @param options
@@ -411,9 +416,7 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api.call = function (options, callback) {
-			options.responseHandler = 'Bs.Response';
-			options.headers = {};
-			return _ajax(callback, options);
+			return new Api().call(options, callback);
 		};
 
 		/**

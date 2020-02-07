@@ -72,7 +72,7 @@ Bs.define('Bs.Collection', {
 		/**
 		 * Api HTTP headers
 		 *
-		 * @type {string}
+		 * @type {Object}
 		 */
 		Collection.prototype.apiHeaders = {};
 
@@ -372,7 +372,6 @@ Bs.define('Bs.Collection', {
 				headers: apiHeaders,
 				responseHandler: apiResponseHandler
 			});
-
 
 			return api[apiMethod.toLowerCase()](url, apiParams, callback);
 		};
