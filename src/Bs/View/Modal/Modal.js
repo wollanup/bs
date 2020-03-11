@@ -20,6 +20,7 @@ Bs.define('Bs.View.Modal', {
 		view           : '',
 		viewOptions    : null,
 		title          : '',
+		subTitle       : "",
 		icon           : '',
 		autofocus      : true,
 		/**
