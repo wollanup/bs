@@ -2151,7 +2151,7 @@ Bs.define('Bs.Api', {
 			options = options || {};
 			callback = _buildCallbackObject(callback);
 
-			config = $.extend({}, _config, options);
+			config = $.extend(true, {}, _config, options);
 
 			return $.ajax(config).always(function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
 				Bs.require(config.responseHandler, function() {
