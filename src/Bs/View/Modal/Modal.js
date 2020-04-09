@@ -99,6 +99,7 @@ Bs.define('Bs.View.Modal', {
 							e.preventDefault();
 							e.stopImmediatePropagation();
 						}
+						that.trigger('subViewReady');
 						return false;
 					});
 				}

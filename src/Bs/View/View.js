@@ -847,16 +847,32 @@ Bs.define('Bs.View', {
             queue = require.length;
             if (queue) {
                 Bs.require(require, function () {
-                    var subView, dfd = new $.Deferred();
+                    var dfd = new $.Deferred();
                     for (var i = 0, view; view = require[i]; i++) {
-                        subView = Bs.create(view, options[i]);
-                        subView.on('ready', function () {
-                            --queue;
-                            if (queue === 0) {
-                                dfd.resolve();
-                            }
-                        });
-                        me.subViewList[options[i].id || view] = subView;
+                        (function(view, options){
+                            var subView, ready = false;
+                            var cb = function(){
+                                if(ready === false) {
+                                    ready = true;
+                                    --queue;
+                                    if (queue === 0) {
+                                        dfd.resolve();
+                                    }
+                                }
+                            };
+                            subView = Bs.create(view, options);
+                            subView.on('afterRender', function () {
+                                setTimeout(function(){
+                                    if(ready === false){
+                                        console.warn('The subview "' + view + '" did not fire "ready" event in 1.5 second. (Called by "'+ me.name +'")');
+                                        subView.triggerHandler('ready');
+                                    }
+                                }, 1500)
+                            });
+                            subView.on('subViewReady', cb);
+                            subView.on('ready', cb);
+                            me.subViewList[options.id || view] = subView;
+                        })(view, options[i])
                     }
                     $.when(dfd).then(function () {
                         callback();
