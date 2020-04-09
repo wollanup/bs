@@ -1,6 +1,6 @@
 {
   "name": "wollanupjs",
-  "version": "4.2.2",
+  "version": "5.0.0",
   "description": "View/Model JS Application",
   "main": "index.js",
   "scripts": {
