@@ -7093,6 +7093,24 @@ Bs.define('Bs.View.Modal', {
 	beforeCreateSubView: function () {
 		var me = this, $modal = me.$el.find('.modal'), model;
 
+		// Prepare Modal
+		$modal.one('hidden.bs.modal', function () {
+			me.destroy();
+		});
+		me.mask();
+		$modal.one('show.bs.modal', function () {
+			me.unmask();
+		});
+		$modal.one('shown.bs.modal', function () {
+			// Use our trigger mechanism, it allows to "listen after a trigger"
+			me.trigger('shown.bs.modal');
+		});
+		$modal.modal({
+			backdrop: me.options.backdrop,
+			keyboard: me.options.closable
+		}).css({ 'z-index': 1051 + me.zIndex });
+		$modal.data('bs.modal').$backdrop.css({ 'z-index': 1050 + me.zIndex });
+
 		if (me.options.viewOptions !== null && 'model' in me.options.viewOptions && me.options.viewOptions.model) {
 			model = me.options.viewOptions.model;
 		}
@@ -7146,17 +7164,9 @@ Bs.define('Bs.View.Modal', {
 	},
 
 	afterRender: function () {
+		var me = this;
 
-		var me = this,
-			$modal = me.$el.find('.modal');
-
-
-		$modal.one('hidden.bs.modal', function () {
-			me.destroy();
-		});
-
-
-		$modal.one('shown.bs.modal', function () {
+		me.one('shown.bs.modal', function () {
 			for (var view in me.subViewList) {
 				// re-trigger previously prevented "ready" event on subViews
 				if (me.subViewList.hasOwnProperty(view)) {
@@ -7178,16 +7188,8 @@ Bs.define('Bs.View.Modal', {
 			me.trigger('ready');
 		});
 
-		$modal.modal({
-			backdrop: me.options.backdrop,
-			keyboard: me.options.closable
-		}).css({ 'z-index': 1051 + me.zIndex });
-
-		$modal.data('bs.modal').$backdrop.css({ 'z-index': 1050 + me.zIndex });
-
 		me.renderCancelBtn();
 	},
-
 	mask: function (text) {
 		return Bs.View.prototype.mask.call(this, text, this.$el.find('.modal-body'));
 	},
