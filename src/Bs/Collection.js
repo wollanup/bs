@@ -118,8 +118,6 @@ Bs.define('Bs.Collection', {
 		 */
 		Collection.prototype.model = '';
 
-		Collection.prototype.itemCount = 0;
-
 		/**
 		 * Name of the Collection like a property
 		 *
@@ -135,10 +133,15 @@ Bs.define('Bs.Collection', {
 		Collection.prototype.type = 'collection';
 
 		/**
+		 *
+		 * @type {boolean}
+		 */
+		Collection.prototype.updateModelPoolOnFetch = true;
+
+		/**
 		 * Take a config object and set fields in class
 		 */
 		Collection.prototype.initialize = function (options) {
-			this.itemCount = 0;
 			this.id += '-' + (++Collection.prototype.nbInstances);
 			_extend(this, this, options);
 		};
@@ -170,7 +173,6 @@ Bs.define('Bs.Collection', {
 		 */
 		Collection.prototype.reset = function () {
 			this.items = [];
-			this.itemCount = 0;
 			return this;
 		};
 
@@ -187,16 +189,16 @@ Bs.define('Bs.Collection', {
 				}
 				item = Bs.create(me.model, item);
 			}
-			me.collectionIndex = ++me.itemCount;
+
+			me.items.push(item);
+
+			// Tweak item
 			item.getCollection = function () {
 				return me;
 			};
-
-			item.index = me.collectionIndex;
 			item.getIndex = function () {
-				return this.index;
+				return this.getCollection().items.indexOf(this)
 			};
-			me.items.push(item);
 
 			return item;
 		};
@@ -212,15 +214,14 @@ Bs.define('Bs.Collection', {
 			if (item instanceof Bs.Model === false) {
 				item = Bs.create(me.model, item);
 			}
+			me.items[index] = item;
+
 			item.getCollection = function () {
 				return me;
 			};
-
-			item.index = index;
 			item.getIndex = function () {
-				return this.index;
+				return this.getCollection().items.indexOf(this)
 			};
-			me.items[index] = item;
 
 			return item;
 		};
@@ -320,7 +321,6 @@ Bs.define('Bs.Collection', {
 				url,
 				callback = Bs.Api.buildCallback(options),
 				item,
-				originalDoneCallback = callback.done,
 				options = options || {},
 				page = options.page || 1,
 				limit = options.limit || Bs.Collection.PAGE_SIZE,
@@ -332,9 +332,25 @@ Bs.define('Bs.Collection', {
 				apiResource = options.apiResource || me.apiResource,
 				apiRoute = options.apiRoute || me.apiRoute,
 				apiHeaders = options.apiHeaders || me.apiHeaders,
-				apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler;
+				apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler,
+				updateModelPool = options.updateModelPool || me.updateModelPoolOnFetch;
 
-			callback.done = function (response) {
+
+			apiAction = apiAction ? '/' + apiAction : apiAction;
+			url = apiRoute || (apiResource + apiAction);
+			apiParams = $.extend(true, apiParams, {page: page, limit: limit});
+			apiParams.sort = sort || null;
+			apiParams.filter = filter || null;
+
+			var api = new Bs.Api({
+				headers: apiHeaders,
+				responseHandler: apiResponseHandler
+			});
+
+			var promise = api[apiMethod.toLowerCase()](url, apiParams, callback);
+
+			promise.then(function (response) {
+				response = new Bs.Response(response);
 				if (me.cache) {
 					me.addToPool();
 				}
@@ -348,32 +364,21 @@ Bs.define('Bs.Collection', {
 							if (list.hasOwnProperty(i) === false) {
 								continue;
 							}
-							var signature = Bs.Model.buildSignature(me.model, list[i].id);
-							if (Bs.Model.isInPool(signature)) {
-								item = me.add(Bs.Model.getFromPool(signature));
-							}
-							else {
-								item = me.add(list[i]);
-								item.setInitialData(list[i]);
+							item = me.add(list[i]);
+							item.setInitialData(list[i]);
+
+							if(updateModelPool) {
+								var signature = Bs.Model.buildSignature(me.model, list[i].id);
+								if (Bs.Model.isInPool(signature)) {
+									Bs.Model.pool[signature] = item;
+								}
 							}
 						}
 					}
 				}
-				originalDoneCallback.call(me, response);
-			};
-
-			apiAction = apiAction ? '/' + apiAction : apiAction;
-			url = apiRoute || (apiResource + apiAction);
-			apiParams = $.extend(true, apiParams, {page: page, limit: limit});
-			apiParams.sort = sort || null;
-			apiParams.filter = filter || null;
-
-			var api = new Bs.Api({
-				headers: apiHeaders,
-				responseHandler: apiResponseHandler
 			});
 
-			return api[apiMethod.toLowerCase()](url, apiParams, callback);
+			return promise;
 		};
 
 		/**
@@ -607,17 +612,22 @@ Bs.define('Bs.Collection', {
 
 			return -1;
 		};
+		/**
+		 *
+		 * @param index
+		 */
+		Collection.prototype.removeAt = function (index) {
+			var me = this;
+			me.items.splice(index, 1);
+		};
 
 		/**
 		 *
 		 * @param {Model} model
 		 */
 		Collection.prototype.remove = function (model) {
-			// TODO broken if multi pk
-			if (model.pk.length > 1) {
-				throw new Error('Composed PK is not managed yet, sorry... :(')
-			}
-			this.removeFirstWhere(model.pk[0], model.getPK()[0]);
+			var me = this, index = me.items.indexOf(model);
+			me.removeAt(index);
 		};
 
 		Collection.prototype.suppress = function (model) {
