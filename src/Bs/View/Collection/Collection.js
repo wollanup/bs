@@ -31,11 +31,14 @@ Bs.define('Bs.View.Collection', {
      */
     viewOptions: null,
 
-    /*
+    /**
      * Store of Model instances
-     * @type {[View]}
+     * @type {[Bs.View]}
      */
     items    : null,
+    /**
+     * @type {[Bs.View]}
+     */
     itemsByPk: null,
 
     /**

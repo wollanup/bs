@@ -878,7 +878,7 @@ this["Handlebars"]["templates"]["Bs/View/Modal/modal"] = Handlebars.template({"1
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"options") : depth0)) != null ? lookupProperty(stack1,"size") : stack1), depth0))
     + "\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header "
     + ((stack1 = lookupProperty(helpers,"if").call(alias3,((stack1 = (depth0 != null ? lookupProperty(depth0,"options") : depth0)) != null ? lookupProperty(stack1,"movable") : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":37},"end":{"line":4,"column":74}}})) != null ? stack1 : "")
-    + "\">\n                <h4 class=\"modal-title text-primary\">\n                    <span class=\"modal-title-main\">"
+    + "\">\n                <h4 class=\"modal-title\">\n                    <span class=\"modal-title-main\">"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"options") : depth0)) != null ? lookupProperty(stack1,"title") : stack1), depth0))
     + "</span>\n                    <small class=\"modal-title-sub\">"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"options") : depth0)) != null ? lookupProperty(stack1,"subTitle") : stack1), depth0))
@@ -6237,7 +6237,6 @@ Bs.define('Bs.View', {
                                     }
                                 }, 1500)
                             });
-                            subView.on('subViewReady', cb);
                             subView.on('ready', cb);
                             me.subViewList[options.id || view] = subView;
                         })(view, options[i])
@@ -7134,33 +7133,7 @@ Bs.define('Bs.View.Modal', {
 				'onbeforeDestroy'  : function () {
 					// Before destroying the subview, hide th modal container
 					$modal.modal('hide');
-				},
-				/**
-				 * Override default "ready" behavior, prevent it,
-				 * it will be fired again after modal will be shown
-				 */
-				'onafterInitialize': function () {
-					var that = this;
-					that.one('ready', function (e) {
-						if (that.triggeredEvents && ('ready' in that.triggeredEvents)) {
-							delete that.triggeredEvents.ready;
-						}
-						if (e) {
-							// Store args received from initial ready event
-							var args = [];
-							for (var i = 1; i < arguments.length; i++) {
-								args.push(arguments[i]);
-							}
-							me.data.readyArgs = args;
-
-							e.preventDefault();
-							e.stopImmediatePropagation();
-						}
-						that.trigger('subViewReady');
-						return false;
-					});
 				}
-
 			}, me.options.viewOptions);
 
 			$modal.find('.view-content')
@@ -7177,14 +7150,7 @@ Bs.define('Bs.View.Modal', {
 		var me = this;
 
 		me.one('shown.bs.modal', function () {
-			for (var view in me.subViewList) {
-				// re-trigger previously prevented "ready" event on subViews
-				if (me.subViewList.hasOwnProperty(view)) {
-					// TODO, maybe we want to pass args only from view which is the main view from options.view
-					me.subViewList[view].trigger('ready', me.data.readyArgs);
-				}
-			}
-			// In case, focus first input if exists
+			// Focus first input if exists
 			if (me.options.autofocus === true) {
 				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().focus().select();
 			}
@@ -7356,11 +7322,14 @@ Bs.define('Bs.View.Collection', {
      */
     viewOptions: null,
 
-    /*
+    /**
      * Store of Model instances
-     * @type {[View]}
+     * @type {[Bs.View]}
      */
     items    : null,
+    /**
+     * @type {[Bs.View]}
+     */
     itemsByPk: null,
 
     /**

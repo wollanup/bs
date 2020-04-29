@@ -869,7 +869,6 @@ Bs.define('Bs.View', {
                                     }
                                 }, 1500)
                             });
-                            subView.on('subViewReady', cb);
                             subView.on('ready', cb);
                             me.subViewList[options.id || view] = subView;
                         })(view, options[i])
