@@ -4331,7 +4331,6 @@ Bs.define('Bs.Model', {
 		Model.prototype.fetch = function (options) {
 			var me = this,
 				callback,
-				originalDoneCallback,
 				url,
 				apiParams,
 				apiAction,
@@ -4343,7 +4342,6 @@ Bs.define('Bs.Model', {
 
 			options = options || {};
 			callback = Bs.Api.buildCallback(options);
-			originalDoneCallback = callback.done;
 			apiParams = options.apiParams || null;
 			apiAction = options.apiAction || me.apiAction;
 			apiRoute = options.apiRoute || me.apiRoute;
@@ -4352,15 +4350,6 @@ Bs.define('Bs.Model', {
 			apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler;
 
 			pk = options.pk || this.getPK(true);
-
-			callback.done = function (response) {
-				var data = response.getData();
-				if (data) {
-					me.setInitialData(data);
-				}
-				Model.addToPool(me.getSignature(), me);
-				originalDoneCallback.call(me, response);
-			};
 
 			if(apiRoute) {
 				url = apiRoute || apiResource + pk + apiAction;
@@ -4376,7 +4365,18 @@ Bs.define('Bs.Model', {
 				responseHandler: apiResponseHandler
 			});
 
-			return api.get(url, apiParams, callback);
+			var promise = api.get(url, apiParams, callback);
+
+			promise.then(function(response){
+				response = new Bs.Response(response);
+				var data = response.getData();
+				if (data) {
+					me.setInitialData(data);
+				}
+				Model.addToPool(me.getSignature(), me);
+			});
+
+			return promise;
 		};
 
 		/**
