@@ -674,21 +674,24 @@ Bs.define('Bs.Model', {
 					url += '/' + this.getPK(true);
 				}
 				data = $.extend(true, {}, this.toObject(), apiParams);
-				Bs.Api.post(url, data, callback)
+				return Bs.Api.post(url, data, callback)
 			}
 			else {
 				url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 				if (me.isModified()) {
 					data = $.extend(true, {}, this.toModifiedObject(), apiParams);
-					Bs.Api.patch(url, data, callback)
+					return Bs.Api.patch(url, data, callback)
 				}
 				else {
 					if(options.force){
-						Bs.Api.patch(url, apiParams, callback)
+						return Bs.Api.patch(url, apiParams, callback)
 					}
 					else {
+						var dfd = new $.Deferred();
+						dfd.resolve();
 						callback.always();
 						callback.nothing();
+						return dfd;
 					}
 				}
 			}
