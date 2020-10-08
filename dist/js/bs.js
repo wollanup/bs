@@ -3368,7 +3368,10 @@ Bs.define('Bs.Collection', {
 		 */
 		Collection.prototype.removeAt = function (index) {
 			var me = this;
-			me.items.splice(index, 1);
+			if(index > -1) {
+				return me.items.splice(index, 1).length === 1;
+			}
+			return false;
 		};
 
 		/**
@@ -3376,8 +3379,12 @@ Bs.define('Bs.Collection', {
 		 * @param {Model} model
 		 */
 		Collection.prototype.remove = function (model) {
+			if((!model instanceof Bs.Model)){
+				throw new Error('\'remove\' method only accepts Model parameter');
+			}
 			var me = this, index = me.items.indexOf(model);
-			me.removeAt(index);
+
+			return me.removeAt(index);
 		};
 
 		Collection.prototype.suppress = function (model) {
