@@ -3099,33 +3099,35 @@ Bs.define('Bs.Collection', {
 
 			var promise = api[apiMethod.toLowerCase()](url, apiParams, callback);
 
-			promise.then(function (response) {
-				response = new Bs.Response(response);
-				if (me.cache) {
-					me.addToPool();
-				}
-				me.reset();
-				me.local = false;
-				me.pagination = response.pagination();
-				var list = response.getData();
-				if (list) {
-					if (typeof list === "object") {
-						for (var i in list) {
-							if (list.hasOwnProperty(i) === false) {
-								continue;
-							}
-							item = me.add(list[i]);
-							item.setInitialData(list[i]);
+			Bs.require(apiResponseHandler, function() {
+				promise.then(function (response) {
+					response = Bs.create(apiResponseHandler, response);
+					if (me.cache) {
+						me.addToPool();
+					}
+					me.reset();
+					me.local = false;
+					me.pagination = response.pagination();
+					var list = response.getData();
+					if (list) {
+						if (typeof list === "object") {
+							for (var i in list) {
+								if (list.hasOwnProperty(i) === false) {
+									continue;
+								}
+								item = me.add(list[i]);
+								item.setInitialData(list[i]);
 
-							if(updateModelPool) {
-								var signature = Bs.Model.buildSignature(me.model, list[i].id);
-								if (Bs.Model.isInPool(signature)) {
-									Bs.Model.pool[signature] = item;
+								if(updateModelPool) {
+									var signature = Bs.Model.buildSignature(me.model, list[i].id);
+									if (Bs.Model.isInPool(signature)) {
+										Bs.Model.pool[signature] = item;
+									}
 								}
 							}
 						}
 					}
-				}
+				});
 			});
 
 			return promise;
