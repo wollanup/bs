@@ -56,6 +56,19 @@ Bs.define('Bs.Model', {
 		Model.prototype.id = 'model';
 
 		/**
+		 * Class name of the Response handler
+		 * @type {string}
+		 */
+		Model.prototype.apiResponseHandler = 'Bs.Response';
+
+		/**
+		 * Api HTTP headers
+		 *
+		 * @type {Object}
+		 */
+		Model.prototype.apiHeaders = {};
+
+		/**
 		 * Resource identifier for API calls (myclass)
 		 * @type {string}
 		 */
@@ -556,31 +569,25 @@ Bs.define('Bs.Model', {
 		Model.prototype.fetch = function (options) {
 			var me = this,
 				callback,
-				originalDoneCallback,
 				url,
 				apiParams,
 				apiAction,
 				apiRoute,
 				apiResource,
+				apiHeaders,
+				apiResponseHandler,
 				pk;
 
 			options = options || {};
 			callback = Bs.Api.buildCallback(options);
-			originalDoneCallback = callback.done;
 			apiParams = options.apiParams || null;
 			apiAction = options.apiAction || me.apiAction;
 			apiRoute = options.apiRoute || me.apiRoute;
 			apiResource = options.apiResource || me.apiResource;
-			pk = options.pk || this.getPK(true);
+			apiHeaders = options.apiHeaders || me.apiHeaders;
+			apiResponseHandler = options.apiResponseHandler || me.apiResponseHandler;
 
-			callback.done = function (response) {
-				var data = response.getData();
-				if (data) {
-					me.setInitialData(data);
-				}
-				Model.addToPool(me.getSignature(), me);
-				originalDoneCallback.call(me, response);
-			};
+			pk = options.pk || this.getPK(true);
 
 			if(apiRoute) {
 				url = apiRoute || apiResource + pk + apiAction;
@@ -591,7 +598,23 @@ Bs.define('Bs.Model', {
 				url = apiResource + pk + apiAction;
 			}
 
-			return Bs.Api.get(url, apiParams, callback);
+			var api = new Bs.Api({
+				headers: apiHeaders,
+				responseHandler: apiResponseHandler
+			});
+
+			var promise = api.get(url, apiParams, callback);
+
+			promise.then(function(response){
+				response = new Bs.Response(response);
+				var data = response.getData();
+				if (data) {
+					me.setInitialData(data);
+				}
+				Model.addToPool(me.getSignature(), me);
+			});
+
+			return promise;
 		};
 
 		/**
@@ -651,21 +674,24 @@ Bs.define('Bs.Model', {
 					url += '/' + this.getPK(true);
 				}
 				data = $.extend(true, {}, this.toObject(), apiParams);
-				Bs.Api.post(url, data, callback)
+				return Bs.Api.post(url, data, callback)
 			}
 			else {
 				url = apiRoute || (apiResource + '/' + this.getPK(true) + apiAction);
 				if (me.isModified()) {
 					data = $.extend(true, {}, this.toModifiedObject(), apiParams);
-					Bs.Api.patch(url, data, callback)
+					return Bs.Api.patch(url, data, callback)
 				}
 				else {
 					if(options.force){
-						Bs.Api.patch(url, apiParams, callback)
+						return Bs.Api.patch(url, apiParams, callback)
 					}
 					else {
+						var dfd = new $.Deferred();
+						dfd.resolve();
 						callback.always();
 						callback.nothing();
+						return dfd;
 					}
 				}
 			}

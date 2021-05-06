@@ -16,59 +16,86 @@ Bs.define('Bs.View.Modal', {
 	hasTranslation: false,
 	autoMask      : false,
 	options       : {
-		view       : "",
-		content    : "",
-		title      : "",
-		subTitle   : "",
-		icon       : "",
+		content        : '',
+		view           : '',
+		viewOptions    : null,
+		title          : '',
+		subTitle       : "",
+		icon           : '',
+		autofocus      : true,
 		/**
-		 * Available sizes are "sm" and "lg"
+		 * Available sizes are "sm" and "lg" and "max"
 		 */
-		size       : "",
-		bodyPadding: true,
-		viewOptions: null,
-		closable   : true,
-		backdrop   : 'static',
-		data:{
-			readyArgs:[]
+		size           : 'default',
+		bodyPadding    : true,
+		closable       : true,
+		backdrop       : 'static',
+		cancelBtnBefore: '[type=submit]',
+		movable        : true,
+		mediaInfo      : false // or string, name of partial
+	},
+	data          : {
+		readyArgs: []
+	},
+
+	initialize: function () {
+		var me = this;
+
+		if (me.options.movable && !$.fn.draggable) {
+			me.options.movable = false;
+		}
+
+		if (me.options.mediaInfo) {
+			return me.getPartial(me.options.mediaInfo);
 		}
 	},
 
+	getTplData: function () {
+		var me = this;
+		return {
+			options            : me.options,
+			getMediaInfoPartial: function () {
+				return me.urlPath + '/tpl/' + me.options.mediaInfo;
+			},
+			model : me.getModel()
+		};
+	},
+
 	beforeCreateSubView: function () {
-		var me = this,
-			$modal = me.$el.find('.modal');
+		var me = this, $modal = me.$el.find('.modal'), model;
+
+		// Prepare Modal
+		$modal.one('hidden.bs.modal', function () {
+			me.destroy();
+		});
+		me.mask();
+		$modal.one('show.bs.modal', function () {
+			me.unmask();
+		});
+		$modal.one('shown.bs.modal', function () {
+			// Use our trigger mechanism, it allows to "listen after a trigger"
+			me.trigger('shown.bs.modal');
+		});
+		$modal.modal({
+			backdrop: me.options.backdrop,
+			keyboard: me.options.closable
+		}).css({ 'z-index': 1051 + me.zIndex });
+		$modal.data('bs.modal').$backdrop.css({ 'z-index': 1050 + me.zIndex });
+
+		if (me.options.viewOptions !== null && 'model' in me.options.viewOptions && me.options.viewOptions.model) {
+			model = me.options.viewOptions.model;
+		}
+		else {
+			model = me.getModel();
+		}
 
 		if (me.options.view) {
-			var options = $.extend(true, {
-				"onbeforeDestroy"  : function () {
+			var options = $.extend(true, {}, me.options.viewOptions, {
+				'model'            : model,
+				'onbeforeDestroy'  : function () {
 					// Before destroying the subview, hide th modal container
 					$modal.modal('hide');
-				},
-				/**
-				 * Override default "ready" behavior, prevent it,
-				 * it will be fired again after modal will be shown
-				 */
-				"onafterInitialize": function () {
-					var that = this;
-					that.one("ready", function (e) {
-						if(that.triggeredEvents && ('ready' in that.triggeredEvents)) {
-							delete that.triggeredEvents.ready;
-						}
-						if (e) {
-							// Store args received from initial ready event
-							var args = [];
-							for (var i = 1; i < arguments.length; i++) {
-								args.push(arguments[i]);
-							}
-							me.data.readyArgs = args;
-
-							e.preventDefault();
-							e.stopImmediatePropagation();
-						}
-						return false;
-					});
 				}
-
 			}, me.options.viewOptions);
 
 			$modal.find('.view-content')
@@ -81,84 +108,54 @@ Bs.define('Bs.View.Modal', {
 		}
 	},
 
-	close: function () {
-		$(window).off("resize", this.resize);
-		this.$el.find('.modal').modal('hide');
-	},
-
-	resize: function () {
-		// padding 2 * 30
-		// header 56
-		// borders 4 to be safe
-		this.$el.find(".view-content").css({height: $(window).height() - 120});
-	},
-
 	afterRender: function () {
+		var me = this;
 
-		var me = this,
-			$modal = me.$el.find('.modal');
-
-		if (me.options.size !== "") {
-			$modal.find('.modal-dialog').addClass('modal-' + me.options.size)
-		}
-
-		$modal.one('hidden.bs.modal', function () {
-			me.destroy();
-		});
-
-		$modal.find('.modal-title-main').html(me.options.title);
-		$modal.find('.modal-title-sub').html(me.options.subTitle);
-		$modal.find('.modal-icon').addClass(me.options.icon);
-		$modal.one('shown.bs.modal', function () {
-			var flexSupport = (window['Modernizr'] && Modernizr.flexbox);
-			for (var view in me.subViewList) {
-				// re-trigger previously prevented "ready" event on subViews
-				if (me.subViewList.hasOwnProperty(view)) {
-					// TODO, maybe we want to pass args only from view which is the main view from options.view
-					me.subViewList[view].trigger('ready', me.data.readyArgs);
-				}
+		me.one('shown.bs.modal', function () {
+			// Focus first input if exists
+			if (me.options.autofocus === true) {
+				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().focus().select();
 			}
-			// In case, focus first input if exists
-			me.$el.find('.view-content').find('input').first().focus().select();
-
 			// Draggable
 			if ($.fn.draggable) {
-				$(me.$el.find(".modal-content")).draggable({
-					handle: ".modal-header"
+				$(me.$el.find('.modal-content')).draggable({
+					handle: '.modal-header'
 				});
-			}
-
-			if (me.options.size === Bs.View.Modal.SIZE_MAX && !flexSupport) {
-				$(window).on("resize", $.proxy(me.resize, me));
-				me.resize();
 			}
 
 			me.trigger('ready');
 		});
 
-		$modal.modal({
-			backdrop: me.options.backdrop,
-			keyboard: me.options.closable
-		}).css({"z-index": 1051 + me.zIndex});
-
-		$modal.data('bs.modal').$backdrop.css({"z-index": 1050 + me.zIndex});
+		me.renderCancelBtn();
 	},
-
-	mask : function(text){
+	mask: function (text) {
 		return Bs.View.prototype.mask.call(this, text, this.$el.find('.modal-body'));
 	},
-	unmask : function(noFade, callback){
+
+	unmask: function (noFade, callback) {
 		return Bs.View.prototype.unmask.call(this, this.$el.find('.modal-body'), noFade, callback);
 	},
-	events: {
-		"click .view-close": function () {
-			this.$el.find('.modal').modal('hide');
+
+	close: function () {
+		this.$el.find('.modal').modal('hide');
+	},
+
+	renderCancelBtn: function () {
+		var me = this;
+		if (me.options.cancelBtnBefore) {
+			Bs.View.Modal.prototype.renderCompiledTpl('cancelBtn', function (html) {
+				me.$el.find(me.options.cancelBtnBefore).first().before(html);
+			});
 		}
+	},
+
+	events: {
+		'click .view-close': 'close'
 	}
+
 }, function () {
 	Bs.View.Modal.SIZE_SMALL = "sm";
 	Bs.View.Modal.SIZE_LARGE = "lg";
 	Bs.View.Modal.SIZE_MAX = "max";
-	Bs.View.Modal.SIZE_FULL_WIDTH = "fullWidth";
 	Bs.View.Modal.SIZE_DEFAULT = "";
 });

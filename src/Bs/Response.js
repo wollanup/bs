@@ -268,6 +268,28 @@ Bs.define('Bs.Response', {
 
 		};
 
+		Response.define = function (className, options, callback) {
+			var parent = this,
+				Surrogate = function Response() {
+				};
+			Response = function Response() {
+				return parent.apply(this, arguments)
+			};
+			Surrogate.prototype = parent.prototype;
+			Response.prototype = new Surrogate;
+			Response.prototype.name = className;
+
+			$.extend(Response.prototype, parent.prototype, options);
+
+			if (Bs.isAsync()) {
+				callback(Response)
+			} else {
+				return Response
+			}
+
+			return Response;
+		};
+
 		return Response;
 	}
 });

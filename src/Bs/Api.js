@@ -24,6 +24,9 @@ Bs.define('Bs.Api', {
 		 * @return {string}
 		 */
 		var _buildUrl = function (path) {
+			if(path && path.match(/http|https|\/\//)){
+				return path;
+			}
 			var url =  Bs.getConfig().api;
 			if(_sessionType){
 				url += '/' + _sessionType;
@@ -83,46 +86,41 @@ Bs.define('Bs.Api', {
 		var _ajax = function (callback, options) {
 			var config;
 
+			options = options || {};
 			callback = _buildCallbackObject(callback);
 
-			config = {
-                type    : "GET",
-                url     : "",
-                data    : null,
-                dataType: "json",
-                headers: _headers
-			};
-			$.extend(config, options);
+			config = $.extend(true, {}, _config, options);
+
 			return $.ajax(config).always(function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
-
-				var data = (textStatus !== "success") ? dataOrJqXHR.responseJSON : dataOrJqXHR,
-					jqXHR = (textStatus !== "success") ? dataOrJqXHR : jqXHROrErrorThrown,
-					response = Bs.create('Bs.Response', data);
-
-				if (response.hasComponent()) {
-					response.requireComponent(function (className) {
-						console.info('Server response requires a component');
-						callback.loadComponent(className, response);
-					});
-					if (response.hasForkComponent()) {
-						return;
+				Bs.require(config.responseHandler, function() {
+					var data = (textStatus !== 'success') ? dataOrJqXHR.responseJSON : dataOrJqXHR,
+						jqXHR = (textStatus !== 'success') ? dataOrJqXHR : jqXHROrErrorThrown,
+						response = Bs.create(config.responseHandler, data);
+					if (response.hasComponent()) {
+						response.requireComponent(function (className) {
+							console.info('Server response requires a component');
+							callback.loadComponent(className, response);
+						});
+						if (response.hasForkComponent()) {
+							return;
+						}
 					}
-				}
 
-				jqXHR.done(function () {
-					callback.done(response);
-				});
+					jqXHR.done(function () {
+						callback.done(response);
+					});
 
-				jqXHR.fail(function () {
-					callback.fail(response, jqXHR);
-				});
+					jqXHR.fail(function () {
+						callback.fail(response, jqXHR);
+					});
 
-				jqXHR.always(function () {
-					callback.always(response);
-				});
+					jqXHR.always(function () {
+						callback.always(response);
+					});
 
-				jqXHR.then(function () {
-					callback.then(response);
+					jqXHR.then(function () {
+						callback.then(response);
+					});
 				});
 			});
 		};
@@ -134,11 +132,209 @@ Bs.define('Bs.Api', {
 		 */
 		var _headers = {};
 
-        /**
-         * Initializes a new instance of Api.
-         * @constructs Bs.Api
-         */
-        function Api() {}
+		/**
+		 * Response handler class
+		 * @type {Object}
+		 * @private
+		 */
+		var _responseHandler = "Bs.Response";
+
+		var _config = {
+			type           : 'GET',
+			url            : '',
+			data           : null,
+			dataType       : 'json',
+			headers        : _headers,
+			responseHandler: _responseHandler
+		};
+
+		/**
+		 * Initializes a new instance of Api.
+		 * @constructs Bs.Api
+		 */
+		function Api (options) {
+			this.headers = {};
+			$.extend(true, this, options);
+		}
+
+		/**
+		 * Classname of the Api Response handler which will be used to parse Api response data
+		 *
+		 * @type {string}
+		 */
+		Api.prototype.responseHandler = 'Bs.Response';
+
+		/**
+		 * An object of valid HTTP headers to send with the Ajax request
+		 *
+		 * @type {{}}
+		 */
+		Api.prototype.headers = {};
+
+		/**
+		 *
+		 * @param url
+		 * @param [data]
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.prototype.get = function (url, data, callback) {
+			if (typeof data === 'function') {
+				callback = data;
+				data = null;
+			}
+
+			return _ajax(callback, {
+				type           : 'GET',
+				url            : _buildUrl(url),
+				data           : data,
+				dataType       : 'json',
+				responseHandler: this.responseHandler,
+				headers        : this.headers
+			});
+		};
+
+		/**
+		 * Call API
+		 *
+		 * @param options
+		 * @param callback
+		 * @returns {*}
+		 */
+		Api.prototype.call = function (options, callback) {
+			return _ajax(callback, options);
+		};
+		/**
+		 *
+		 * @param url
+		 * @param [data]
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.prototype.post = function (url, data, callback) {
+
+			if (typeof data === 'function') {
+				callback = data;
+				data = null;
+			}
+
+			if (window.FormData && data instanceof FormData) {
+				return _ajax(callback, {
+					type: "POST",
+					url: _buildUrl(url),
+					data: data,
+					processData: false,
+					contentType: false,
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			}
+
+			if (typeof data === 'object') {
+				return _ajax(callback, {
+					type: "POST",
+					url: _buildUrl(url),
+					data: JSON.stringify(data),
+					processData: false,
+					contentType: 'application/json',
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			}
+
+			return _ajax(callback, {
+				type: "POST",
+				url: _buildUrl(url),
+				data: data,
+				responseHandler: this.responseHandler,
+				headers: this.headers
+			});
+		};
+		/**
+		 *
+		 * @param url
+		 * @param [data]
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.prototype['delete'] = function (url, data, callback) { // this.delete fails in IE8
+			if (typeof data === 'object') {
+				return _ajax(callback, {
+					type: "DELETE",
+					url: _buildUrl(url),
+					data: JSON.stringify(data),
+					processData: false,
+					contentType: 'application/json',
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			} else {
+				return _ajax(callback, {
+					type: "DELETE",
+					url: _buildUrl(url),
+					data: data,
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			}
+		};
+		/**
+		 *
+		 * @param url
+		 * @param [data]
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.prototype.patch = function (url, data, callback) {
+			if (typeof data === 'object') {
+				return _ajax(callback, {
+					type: "PATCH",
+					url: _buildUrl(url),
+					data: JSON.stringify(data),
+					processData: false,
+					contentType: 'application/json',
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			} else {
+				return _ajax(callback, {
+					type: "PATCH",
+					url: _buildUrl(url),
+					data: data,
+					success: callback,
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			}
+		};
+		/**
+		 *
+		 * @param url
+		 * @param [data]
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.prototype.put = function (url, data, callback) {
+			if (typeof data === 'object') {
+				return _ajax(callback, {
+					type: "PUT",
+					url: _buildUrl(url),
+					data: JSON.stringify(data),
+					processData: false,
+					contentType: 'application/json',
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			} else {
+				return _ajax(callback, {
+					type: "PUT",
+					url: _buildUrl(url),
+					data: data,
+					responseHandler: this.responseHandler,
+					headers: this.headers
+				});
+			}
+		};
 
 		/**
          * Transform array PK to string
@@ -213,17 +409,17 @@ Bs.define('Bs.Api', {
 			return _buildUrl(path);
 		};
 
-        /**
-         *
-         * @param options
-         * @param [callback]
-         * @return {*}
-         */
-        Api.call = function (options, callback) {
-            return _ajax(callback, options);
-        };
+		/**
+		 *
+		 * @param options
+		 * @param [callback]
+		 * @return {*}
+		 */
+		Api.call = function (options, callback) {
+			return new Api().call(options, callback);
+		};
 
-        /**
+		/**
 		 *
 		 * @param url
 		 * @param [data]
@@ -231,20 +427,7 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api.get = function (url, data, callback) {
-
-			if (typeof data === 'function') {
-				callback = data;
-				data = null;
-			}
-
-			return _ajax(callback, {
-				type    : "GET",
-				url     : _buildUrl(url),
-				data    : data,
-				dataType: "json",
-				headers : _headers
-			});
-
+			return new Api().get(url, data, callback);
 		};
 		/**
 		 *
@@ -254,37 +437,7 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api.post = function (url, data, callback) {
-
-			if (typeof data === 'function') {
-				callback = data;
-				data = null;
-			}
-
-			if (window.FormData && data instanceof FormData) {
-				return _ajax(callback, {
-					type       : "POST",
-					url        : _buildUrl(url),
-					data       : data,
-					processData: false,
-					contentType: false
-				});
-			}
-
-			if (typeof data === 'object') {
-				return _ajax(callback, {
-					type       : "POST",
-					url        : _buildUrl(url),
-					data       : JSON.stringify(data),
-					processData: false,
-					contentType: 'application/json'
-				});
-			}
-
-			return _ajax(callback, {
-				type: "POST",
-				url : _buildUrl(url),
-				data: data
-			});
+			return new Api().post(url, data, callback);
 		};
 		/**
 		 *
@@ -294,22 +447,7 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api['delete'] = function (url, data, callback) { // this.delete fails in IE8
-			if (typeof data === 'object') {
-				return _ajax(callback, {
-					type       : "DELETE",
-					url        : _buildUrl(url),
-					data       : JSON.stringify(data),
-					processData: false,
-					contentType: 'application/json'
-				});
-			}
-			else {
-				return _ajax(callback, {
-					type: "DELETE",
-					url : _buildUrl(url),
-					data: data
-				});
-			}
+			return new Api().delete(url, data, callback);
 		};
 		/**
 		 *
@@ -319,23 +457,7 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api.patch = function (url, data, callback) {
-			if (typeof data === 'object') {
-				return _ajax(callback, {
-					type       : "PATCH",
-					url        : _buildUrl(url),
-					data       : JSON.stringify(data),
-					processData: false,
-					contentType: 'application/json'
-				});
-			}
-			else {
-				return _ajax(callback, {
-					type   : "PATCH",
-					url    : _buildUrl(url),
-					data   : data,
-					success: callback
-				});
-			}
+			return new Api().patch(url, data, callback);
 		};
 		/**
 		 *
@@ -345,29 +467,13 @@ Bs.define('Bs.Api', {
 		 * @return {*}
 		 */
 		Api.put = function (url, data, callback) {
-			if (typeof data === 'object') {
-				return _ajax(callback, {
-					type       : "PUT",
-					url        : _buildUrl(url),
-					data       : JSON.stringify(data),
-					processData: false,
-					contentType: 'application/json'
-				});
-			}
-			else {
-				return _ajax(callback, {
-					type: "PUT",
-					url : _buildUrl(url),
-					data: data
-				});
-			}
+			return new Api().put(url, data, callback);
 		};
 
 		/**
 		 * @param options
 		 * @return {{done: Function, fail: Function, always: Function, nothing : Function}}
 		 */
-
 		Api.buildCallback = function (options) {
 			var callback = {
 				done   : function () {},
