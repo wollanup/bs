@@ -37,6 +37,11 @@ Bs.define('Bs.Model', {
          */
         Model.toObjectClasses = [];
         /**
+         *
+         * @type {*[]}
+         */
+        Model.relationClassesSetted = [];
+        /**
          * Number of instance derived from this class
          * Used to create unique id
          * @type {number}
@@ -224,7 +229,9 @@ Bs.define('Bs.Model', {
                     //If value is null but we have relation, try to get it from pool
                     if (this.relations[field] && fromPool) {
                         var relation = this.relations[field];
-                        if (typeof relation === 'object' && this.fields[field].isNew()) {
+                        var fieldRelation = this.fields[field];
+                        //Check if the object is new (not previously fetched) or doesn't exist yet
+                        if (typeof relation === 'object' && (!fieldRelation || fieldRelation.isNew())) {
                             var relationClass = relation.relationClass;
                             var pkFieldName = relation.pkFieldName;
                             if (this.has(pkFieldName)) {
@@ -285,6 +292,12 @@ Bs.define('Bs.Model', {
         };
 
         Model.prototype.setRelation = function (field, value) {
+            var modelSignature = this.getSignature();
+            //Don't set the relation back if it was already previously setted
+            if (Model.relationClassesSetted.indexOf(modelSignature) >= 0) {
+                return null;
+            }
+            Model.relationClassesSetted.push(modelSignature);
 
             var className = this.relations[field], relation = this.fields[field];
 
@@ -307,6 +320,10 @@ Bs.define('Bs.Model', {
                 relation = this.fields[field] = bsClass;
                 _linkRelationToParent.call(this, relation, field);
             }
+
+            //We can remove the value from the array here, no more relation setted after
+            var index = Model.relationClassesSetted.indexOf(modelSignature);
+            Model.relationClassesSetted.splice(index, 1);
 
             // Value is an instance
             if (value instanceof Bs.Collection || value instanceof Bs.Model) {
@@ -749,7 +766,7 @@ Bs.define('Bs.Model', {
                         temp[field] = o && o.toObject && o.toObject(withFnAndExtra) || null;
                     }
                     else {
-                        temp[field] = this.get(field,false);
+                        temp[field] = this.get(field, false);
                     }
                 }
             }
@@ -766,8 +783,8 @@ Bs.define('Bs.Model', {
                 }
                 $.extend(true, temp, this.getExtraData(), fnList);
             }
-            var index = Model.toObjectClasses.indexOf(signature)
-            Model.toObjectClasses.splice(index,1);
+            var index = Model.toObjectClasses.indexOf(signature);
+            Model.toObjectClasses.splice(index, 1);
             return temp;
         };
 
