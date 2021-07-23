@@ -259,7 +259,7 @@ Bs.define('Bs.View.Collection', {
     removeItem : function (model) {
         var me = this, view;
         me.getCollection().remove(model);
-        view = me.itemsByPk[model.get('id')];
+        view = me.itemsByPk[model.getPK(true)];
         view.destroy();
         if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
             me.renderEmptyCollection();
