@@ -60,6 +60,7 @@ module.exports = function (grunt) {
                     'src/Bs/Util/Browser.js',
                     'src/Bs/Util/CallbackBuilder.js',
                     'src/Bs/Util/UrlParser.js',
+                    'src/Bs/Util/Cookie.js',
                     'dist/js/tmp/lng/*.js'
                 ],
                 dest: 'dist/js/bs.js'
