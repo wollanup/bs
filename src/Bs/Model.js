@@ -368,7 +368,7 @@ Bs.define('Bs.Model', {
             }
 
             if (typeof value === 'string') {
-                value = $.trim(value);
+                value = String.prototype.trim(value);
             }
 
             if (field.indexOf('.') > 0) {
@@ -921,7 +921,7 @@ Bs.define('Bs.Model', {
          * @param params
          */
         Model.prototype.trigger = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -936,7 +936,7 @@ Bs.define('Bs.Model', {
          * @param params
          */
         Model.prototype.triggerHandler = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;

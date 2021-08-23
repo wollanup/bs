@@ -479,7 +479,7 @@ Bs.define('Bs.View', {
          * @param params
          */
         View.prototype.trigger = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -494,7 +494,7 @@ Bs.define('Bs.View', {
          * @param params
          */
         View.prototype.triggerHandler = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -717,15 +717,18 @@ Bs.define('Bs.View', {
                 me.translate();
                 me.trigger('beforeCreateSubView');
                 me.createSubViews(function () {
-                    // TODO manage rendered with Deferred in subViews
-                    me.rendered = true;
-                    if (me.bindData) {
-                        me.trigger('beforeDataBind');
-                        me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                    }
-                    if (me.autoMask) {
-                        me.unmask();
-                    }
+                    new $.deferred(function() {
+                        if (me.bindData) {
+                            me.trigger('beforeDataBind');
+                            me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
+                        }
+                    })
+                        .done(function() {
+                            if (me.autoMask) {
+                                me.unmask();
+                            }
+                            me.rendered = true;
+                        });
 
                     dfd.resolve();
                 });
@@ -1073,7 +1076,7 @@ Bs.define('Bs.View', {
             }
             validity = form.checkValidity();
             if (!validity) {
-                $('<input type="submit">').hide().appendTo($(form)).click().remove();
+                $('<input type="submit">').hide().appendTo($(form)).trigger('click').remove();
             }
             e.preventDefault();
 
@@ -1404,7 +1407,7 @@ Bs.define('Bs.View', {
 
             /// Transform config string/model into array
             config.model = config.model || [];
-            if ($.isArray(config.model) === false) {
+            if (Array.isArray(config.model) === false) {
                 config.model = [config.model];
             }
             if (config.model.length) {
@@ -1605,7 +1608,7 @@ Bs.define('Bs.View', {
                 return data;
             }
             // Data is a simple array
-            if ($.isArray(data)) {
+            if (Array.isArray(data)) {
                 return data;
             }
             // Data is a Model/Collection
