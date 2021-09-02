@@ -4152,7 +4152,7 @@ Bs.define('Bs.Model', {
             }
 
             if (typeof value === 'string') {
-                value = $.trim(value);
+                value = String.prototype.trim(value);
             }
 
             if (field.indexOf('.') > 0) {
@@ -4705,7 +4705,7 @@ Bs.define('Bs.Model', {
          * @param params
          */
         Model.prototype.trigger = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -4720,7 +4720,7 @@ Bs.define('Bs.Model', {
          * @param params
          */
         Model.prototype.triggerHandler = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -5925,7 +5925,7 @@ Bs.define('Bs.View', {
          * @param params
          */
         View.prototype.trigger = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -5940,7 +5940,7 @@ Bs.define('Bs.View', {
          * @param params
          */
         View.prototype.triggerHandler = function (event, params) {
-            if (!$.isArray(params)) {
+            if (!Array.isArray(params)) {
                 params = [params];
             }
             this.triggeredEvents[event] = params;
@@ -6163,15 +6163,18 @@ Bs.define('Bs.View', {
                 me.translate();
                 me.trigger('beforeCreateSubView');
                 me.createSubViews(function () {
-                    // TODO manage rendered with Deferred in subViews
-                    me.rendered = true;
-                    if (me.bindData) {
-                        me.trigger('beforeDataBind');
-                        me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                    }
-                    if (me.autoMask) {
-                        me.unmask();
-                    }
+                    new $.deferred(function() {
+                        if (me.bindData) {
+                            me.trigger('beforeDataBind');
+                            me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
+                        }
+                    })
+                        .done(function() {
+                            if (me.autoMask) {
+                                me.unmask();
+                            }
+                            me.rendered = true;
+                        });
 
                     dfd.resolve();
                 });
@@ -6519,7 +6522,7 @@ Bs.define('Bs.View', {
             }
             validity = form.checkValidity();
             if (!validity) {
-                $('<input type="submit">').hide().appendTo($(form)).click().remove();
+                $('<input type="submit">').hide().appendTo($(form)).trigger('click').remove();
             }
             e.preventDefault();
 
@@ -6850,7 +6853,7 @@ Bs.define('Bs.View', {
 
             /// Transform config string/model into array
             config.model = config.model || [];
-            if ($.isArray(config.model) === false) {
+            if (Array.isArray(config.model) === false) {
                 config.model = [config.model];
             }
             if (config.model.length) {
@@ -7051,7 +7054,7 @@ Bs.define('Bs.View', {
                 return data;
             }
             // Data is a simple array
-            if ($.isArray(data)) {
+            if (Array.isArray(data)) {
                 return data;
             }
             // Data is a Model/Collection
@@ -7230,7 +7233,7 @@ Bs.define('Bs.View.Modal', {
 		me.one('shown.bs.modal', function () {
 			// Focus first input if exists
 			if (me.options.autofocus === true) {
-				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().focus().select();
+				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().trigger('focus').trigger('select');
 			}
 			// Draggable
 			if ($.fn.draggable) {
@@ -8091,7 +8094,7 @@ Bs.define('Bs.View.Alert', {
 				me.options.translate = false;
 			}
 			else {
-				if ($.isArray(me.options.msg)) {
+				if (Array.isArray(me.options.msg)) {
 					me.options.msg = me.options.msg[0].urlPath + ':' + me.options.msg[1]
 				}
 				else if (!me.options.msg) {
@@ -8104,7 +8107,7 @@ Bs.define('Bs.View.Alert', {
 				}
 			}
 		}
-		if ($.isArray(me.options.title)) {
+		if (Array.isArray(me.options.title)) {
 			me.options.title = me.options.title[0].urlPath + ':' + me.options.title[1]
 		}
 	},
