@@ -67,7 +67,7 @@ Bs.define('Bs.View.Alert', {
 				me.options.translate = false;
 			}
 			else {
-				if ($.isArray(me.options.msg)) {
+				if (Array.isArray(me.options.msg)) {
 					me.options.msg = me.options.msg[0].urlPath + ':' + me.options.msg[1]
 				}
 				else if (!me.options.msg) {
@@ -80,7 +80,7 @@ Bs.define('Bs.View.Alert', {
 				}
 			}
 		}
-		if ($.isArray(me.options.title)) {
+		if (Array.isArray(me.options.title)) {
 			me.options.title = me.options.title[0].urlPath + ':' + me.options.title[1]
 		}
 	},

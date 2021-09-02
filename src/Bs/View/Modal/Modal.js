@@ -114,7 +114,7 @@ Bs.define('Bs.View.Modal', {
 		me.one('shown.bs.modal', function () {
 			// Focus first input if exists
 			if (me.options.autofocus === true) {
-				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().focus().select();
+				me.$el.find('.view-content').find(':input:not([readonly]):not([disabled])').first().trigger('focus').trigger('select');
 			}
 			// Draggable
 			if ($.fn.draggable) {

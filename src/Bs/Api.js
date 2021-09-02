@@ -89,7 +89,20 @@ Bs.define('Bs.Api', {
 			options = options || {};
 			callback = _buildCallbackObject(callback);
 
-			config = $.extend(true, {}, _config, options);
+			config = $.extend(true, {headers:{}}, _config, options);
+
+			var csrfToken = Bs.Util.Cookie.read('CSRF_TOKEN');
+
+			if (csrfToken !== null) {
+				switch (config.type.toLowerCase()) {
+					case 'post':
+					case 'put':
+					case 'patch':
+					case 'delete':
+						config.headers['X-CSRF-TOKEN'] = csrfToken;
+						break;
+				}
+			}
 
 			return $.ajax(config).always(function (dataOrJqXHR, textStatus, jqXHROrErrorThrown) {
 				Bs.require(config.responseHandler, function() {
