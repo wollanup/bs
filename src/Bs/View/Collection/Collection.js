@@ -39,7 +39,7 @@ Bs.define('Bs.View.Collection', {
     /**
      * @type {[Bs.View]}
      */
-    itemsByPk: null,
+    itemsByInternalId: null,
 
     /**
      *
@@ -100,7 +100,7 @@ Bs.define('Bs.View.Collection', {
         var me = this, dfd = new $.Deferred(), dfdCollection = new $.Deferred(), dfdView = new $.Deferred();
 
         me.items = [];
-        me.itemsByPk = {};
+        me.itemsByInternalId = {};
         if (typeof me.collection === 'string') {
             Bs.require(Bs.Util.addPrefixIfMissing('Collection', me.collection), function (createCollection) {
                 me.collection = createCollection(me.collectionOptions);
@@ -259,12 +259,16 @@ Bs.define('Bs.View.Collection', {
     removeItem : function (model) {
         var me = this, view;
         me.getCollection().remove(model);
-        view = me.itemsByPk[model.getPK(true)];
+        view = me.itemsByInternalId[model.id];
         view.destroy();
         if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
             me.renderEmptyCollection();
         }
-
+        delete me.itemsByInternalId[model.id];
+        var index = me.items.indexOf(view);
+        if(index > -1) {
+            me.items.splice(index, 1);
+        }
         return view;
     },
     /**
@@ -302,8 +306,8 @@ Bs.define('Bs.View.Collection', {
 
         var view = Bs.create(Bs.Util.addPrefixIfMissing('View', me.itemView), options);
         me.items.push(view);
-        if (model && 'getPK' in model) {
-            me.itemsByPk[model.getPK(true)] = view;
+        if (model) {
+            me.itemsByInternalId[model.id] = view;
         }
 
         return view;
@@ -353,8 +357,8 @@ Bs.define('Bs.View.Collection', {
             options.model = model;
             view = Bs.create(Bs.Util.addPrefixIfMissing('View', me.itemView), options);
             me.items.push(view);
-            if (model && 'getPK' in model) {
-                me.itemsByPk[model.getPK(true)] = view;
+            if (model) {
+                me.itemsByInternalId[model.id] = view;
             }
             view.on('ready', function () {
                 dfd.notify(view);
@@ -363,7 +367,7 @@ Bs.define('Bs.View.Collection', {
 
         if (!append) {
             me.items = [];
-            me.itemsByPk = {};
+            me.itemsByInternalId = {};
             me.data.$elCollection.empty();
             me.data.$elEmptyCollection.empty();
         }
