@@ -6163,21 +6163,6 @@ Bs.define('Bs.View', {
                 me.translate();
                 me.trigger('beforeCreateSubView');
                 me.createSubViews(function () {
-                    // var dfdSubview = $.Deferred(function() {
-                    //     if (me.bindData) {
-                    //         me.trigger('beforeDataBind');
-                    //         me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                    //     }
-                    // });
-                    // dfdSubview.done(function() {
-                    //     if (me.autoMask) {
-                    //         me.unmask();
-                    //     }
-                    //     me.rendered = true;
-                    //     console.log('dfdResolve');
-                    //     dfd.resolve();
-                    // });
-                    // dfdSubview.resolve();
                     // TODO manage rendered with Deferred in subViews
                     me.rendered = true;
                     if (me.bindData) {
@@ -6187,6 +6172,7 @@ Bs.define('Bs.View', {
                     if (me.autoMask) {
                         me.unmask();
                     }
+                    me.rendered = true;
                     dfd.resolve();
                 });
             });
