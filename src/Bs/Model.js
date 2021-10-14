@@ -368,7 +368,7 @@ Bs.define('Bs.Model', {
             }
 
             if (typeof value === 'string') {
-                value = String.prototype.trim(value);
+                value = value.trim();
             }
 
             if (field.indexOf('.') > 0) {
