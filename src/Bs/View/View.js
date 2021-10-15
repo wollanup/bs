@@ -717,19 +717,16 @@ Bs.define('Bs.View', {
                 me.translate();
                 me.trigger('beforeCreateSubView');
                 me.createSubViews(function () {
-                    new $.deferred(function() {
-                        if (me.bindData) {
-                            me.trigger('beforeDataBind');
-                            me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                        }
-                    })
-                        .done(function() {
-                            if (me.autoMask) {
-                                me.unmask();
-                            }
-                            me.rendered = true;
-                        });
-
+                    // TODO manage rendered with Deferred in subViews
+                    me.rendered = true;
+                    if (me.bindData) {
+                        me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
+                        me.trigger('beforeDataBind');
+                    }
+                    if (me.autoMask) {
+                        me.unmask();
+                    }
+                    me.rendered = true;
                     dfd.resolve();
                 });
             });

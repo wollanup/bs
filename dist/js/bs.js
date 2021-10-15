@@ -4152,7 +4152,7 @@ Bs.define('Bs.Model', {
             }
 
             if (typeof value === 'string') {
-                value = String.prototype.trim(value);
+                value = value.trim();
             }
 
             if (field.indexOf('.') > 0) {
@@ -6163,19 +6163,16 @@ Bs.define('Bs.View', {
                 me.translate();
                 me.trigger('beforeCreateSubView');
                 me.createSubViews(function () {
-                    new $.deferred(function() {
-                        if (me.bindData) {
-                            me.trigger('beforeDataBind');
-                            me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                        }
-                    })
-                        .done(function() {
-                            if (me.autoMask) {
-                                me.unmask();
-                            }
-                            me.rendered = true;
-                        });
-
+                    // TODO manage rendered with Deferred in subViews
+                    me.rendered = true;
+                    if (me.bindData) {
+                        me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
+                        me.trigger('beforeDataBind');
+                    }
+                    if (me.autoMask) {
+                        me.unmask();
+                    }
+                    me.rendered = true;
                     dfd.resolve();
                 });
             });
@@ -7411,7 +7408,7 @@ Bs.define('Bs.View.Collection', {
     /**
      * @type {[Bs.View]}
      */
-    itemsByPk: null,
+    itemsByInternalId: null,
 
     /**
      *
@@ -7472,7 +7469,7 @@ Bs.define('Bs.View.Collection', {
         var me = this, dfd = new $.Deferred(), dfdCollection = new $.Deferred(), dfdView = new $.Deferred();
 
         me.items = [];
-        me.itemsByPk = {};
+        me.itemsByInternalId = {};
         if (typeof me.collection === 'string') {
             Bs.require(Bs.Util.addPrefixIfMissing('Collection', me.collection), function (createCollection) {
                 me.collection = createCollection(me.collectionOptions);
@@ -7580,8 +7577,15 @@ Bs.define('Bs.View.Collection', {
 
                     var previousRemoveFn = me.getCollection().remove;
                     me.collection.remove = function (model) {
+                        var view = me.itemsByInternalId[model.id];
+                        view.destroy();
+                        delete me.itemsByInternalId[model.id];
+                        var index = me.items.indexOf(view);
+                        if(index > -1) {
+                            me.items.splice(index, 1);
+                        }
                         previousRemoveFn.call(me.collection, model);
-                        me.renderCollection();
+
                         return model;
                     };
                 }
@@ -7630,13 +7634,8 @@ Bs.define('Bs.View.Collection', {
      */
     removeItem : function (model) {
         var me = this, view;
+        view = me.itemsByInternalId[model.id];
         me.getCollection().remove(model);
-        view = me.itemsByPk[model.getPK(true)];
-        view.destroy();
-        if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
-            me.renderEmptyCollection();
-        }
-
         return view;
     },
     /**
@@ -7674,8 +7673,8 @@ Bs.define('Bs.View.Collection', {
 
         var view = Bs.create(Bs.Util.addPrefixIfMissing('View', me.itemView), options);
         me.items.push(view);
-        if (model && 'getPK' in model) {
-            me.itemsByPk[model.getPK(true)] = view;
+        if (model) {
+            me.itemsByInternalId[model.id] = view;
         }
 
         return view;
@@ -7725,8 +7724,8 @@ Bs.define('Bs.View.Collection', {
             options.model = model;
             view = Bs.create(Bs.Util.addPrefixIfMissing('View', me.itemView), options);
             me.items.push(view);
-            if (model && 'getPK' in model) {
-                me.itemsByPk[model.getPK(true)] = view;
+            if (model) {
+                me.itemsByInternalId[model.id] = view;
             }
             view.on('ready', function () {
                 dfd.notify(view);
@@ -7735,7 +7734,7 @@ Bs.define('Bs.View.Collection', {
 
         if (!append) {
             me.items = [];
-            me.itemsByPk = {};
+            me.itemsByInternalId = {};
             me.data.$elCollection.empty();
             me.data.$elEmptyCollection.empty();
         }
