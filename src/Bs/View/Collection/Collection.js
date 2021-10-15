@@ -208,8 +208,14 @@ Bs.define('Bs.View.Collection', {
 
                     var previousRemoveFn = me.getCollection().remove;
                     me.collection.remove = function (model) {
+                        var view = me.itemsByInternalId[model.id];
+                        view.destroy();
+                        var index = me.items.indexOf(view);
+                        if(index > -1) {
+                            me.items.splice(index, 1);
+                        }
                         previousRemoveFn.call(me.collection, model);
-                        me.renderCollection();
+
                         return model;
                     };
                 }
@@ -258,17 +264,8 @@ Bs.define('Bs.View.Collection', {
      */
     removeItem : function (model) {
         var me = this, view;
-        me.getCollection().remove(model);
         view = me.itemsByInternalId[model.id];
-        view.destroy();
-        if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
-            me.renderEmptyCollection();
-        }
-        delete me.itemsByInternalId[model.id];
-        var index = me.items.indexOf(view);
-        if(index > -1) {
-            me.items.splice(index, 1);
-        }
+        me.getCollection().remove(model);
         return view;
     },
     /**
