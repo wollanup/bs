@@ -7579,6 +7579,7 @@ Bs.define('Bs.View.Collection', {
                     me.collection.remove = function (model) {
                         var view = me.itemsByInternalId[model.id];
                         view.destroy();
+                        delete me.itemsByInternalId[model.id];
                         var index = me.items.indexOf(view);
                         if(index > -1) {
                             me.items.splice(index, 1);
