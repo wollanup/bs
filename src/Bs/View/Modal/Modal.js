@@ -68,9 +68,11 @@ Bs.define('Bs.View.Modal', {
 		$modal.one('hidden.bs.modal', function () {
 			me.destroy();
 		});
-		me.mask();
+		var dfd = me.mask();
 		$modal.one('show.bs.modal', function () {
-			me.unmask();
+			dfd.then(function(){
+				me.unmask();
+			});
 		});
 		$modal.one('shown.bs.modal', function () {
 			// Use our trigger mechanism, it allows to "listen after a trigger"

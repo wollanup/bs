@@ -706,30 +706,38 @@ Bs.define('Bs.View', {
 
             me.trigger('beforeRender');
 
+            var dfdMask = new $.Deferred();
             if (me.autoMask) {
-                me.mask();
+                me.mask().then(function(){
+                    dfdMask.resolve()
+                });
+            }
+            else{
+                dfdMask.resolve();
             }
 
-            me.getTemplateHtml(function (tplHtml) {
-                me.$el.append(tplHtml);
-                // Register events
-                me.addEvents(me.events);
-                me.translate();
-                me.trigger('beforeCreateSubView');
-                me.createSubViews(function () {
-                    // TODO manage rendered with Deferred in subViews
-                    me.rendered = true;
-                    if (me.bindData) {
-                        me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
-                        me.trigger('beforeDataBind');
-                    }
-                    if (me.autoMask) {
-                        me.unmask();
-                    }
-                    me.rendered = true;
-                    dfd.resolve();
+            dfdMask.then(function(){
+                me.getTemplateHtml(function (tplHtml) {
+                    me.$el.append(tplHtml);
+                    // Register events
+                    me.addEvents(me.events);
+                    me.translate();
+                    me.trigger('beforeCreateSubView');
+                    me.createSubViews(function () {
+                        // TODO manage rendered with Deferred in subViews
+                        me.rendered = true;
+                        if (me.bindData) {
+                            me.trigger('beforeDataBind');
+                            me.dataBinder = Bs.create('Bs.DataBinder', { view: me });
+                        }
+                        if (me.autoMask) {
+                            me.unmask();
+                        }
+                        dfd.resolve();
+                    });
                 });
-            });
+            })
+
 
             return dfd;
         };
@@ -952,22 +960,24 @@ Bs.define('Bs.View', {
          * @returns {View}
          */
         View.prototype.mask = function (text, $el) {
-            var me = this;
+            var me = this, dfd = new $.Deferred();
 
             $el = $el ? me.$el.find($($el)) : me.$el;
 
             if ($el.length === 0) {
-                return me;
+                dfd.resolve();
+                return dfd;
             }
 
             // Remove previous mask, usefull in case you re-mask with new text
             $el.find('.bs-view-loading').remove();
-
             Bs.create('Bs.View.Loading', {
                 text    : text,
                 renderTo: $el
+            }).on('ready', function(){
+                dfd.resolve();
             });
-            return me;
+            return dfd;
         };
 
         /**
