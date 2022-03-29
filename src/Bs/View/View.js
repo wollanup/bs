@@ -133,6 +133,13 @@ Bs.define('Bs.View', {
          */
         View.prototype.urlRoot = Bs.getConfig().urlApp;
         /**
+         * Manner to render element
+         * Accept append|prepend|after|before
+         *
+         * @type {string}
+         */
+        View.prototype.renderMode = 'append';
+        /**
          * Element where the module will be append
          * Accept CSS selector syntax (#myId) or DOMElement or jQuery el
          *
@@ -700,7 +707,22 @@ Bs.define('Bs.View', {
                 throw new Error('View "' + me.name + '" cannot be rendered in renderTo element');
             }
 
-            me.$el.appendTo($renderTo);
+            switch (me.renderMode) {
+                case 'before':
+                    me.$el.insertBefore($renderTo);
+                    break;
+                case 'prepend':
+                    me.$el.prependTo($renderTo);
+                    break;
+                case 'after':
+                    me.$el.insertAfter($renderTo);
+                    break;
+                case 'append':
+                default:
+                    me.$el.appendTo($renderTo);
+                    break;
+            }
+
             me.$el.attr('data-view', true);
             me.$el.data('view', me);
 
