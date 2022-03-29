@@ -253,10 +253,9 @@ Bs.define('Bs.View.Collection', {
         if (me.data.$elEmptyCollection && me.getCollection().isEmpty()) {
             me.data.$elEmptyCollection.empty();
         }
-        var $tmp = $('<div></div>');
-        var view = me.renderOne(me.getCollection().add(data), viewOptions, $tmp);
-        me.data.$elCollection.prepend($tmp.children()[0]);
-        return view;
+        viewOptions = $.extend(true, viewOptions, {renderMode: 'prepend'});
+
+        return me.renderOne(me.getCollection().add(data), viewOptions, me.data.$elCollection);
     },
     /**
      *
