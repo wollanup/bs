@@ -59,7 +59,7 @@ Bs.define('Bs.Template', {
 		Template.load = function (url, tplName, additionalScriptsOnly) {
 			var dfd = new $.Deferred();
 
-			$.get(url)
+			$.get(Bs._getVersionedUrl(url))
 				.done(function (tplHtml) {
 					Handlebars.templates[tplName] = Handlebars.compile(tplHtml);
 					// Bs.Template.registerLoadedTemplate(tplHtml, viewName, additionalScriptsOnly);
@@ -74,7 +74,7 @@ Bs.define('Bs.Template', {
 		Template.loadPartial = function (url, tplName, additionalScriptsOnly) {
 			var dfd = new $.Deferred();
 
-			$.get(url)
+			$.get(Bs._getVersionedUrl(url))
 				.done(function (tplHtml) {
 					Handlebars.registerPartial(tplName, tplHtml);
 					dfd.resolve();
