@@ -48,7 +48,6 @@ Bs.define('Bs.Collection', {
 		 * @type {[Model]}
 		 */
 		Collection.prototype.items = [];
-		Collection.prototype.itemsByPk = {};
 
 		/**
 		 * Number of instance derived from this class
