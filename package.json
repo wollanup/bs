@@ -12,7 +12,7 @@
     "url": "git+https://github.com/wollanup/bs.git"
   },
   "keywords": [],
-  "author": "Steve Mareigner <steve.mareigner@gmail.com> (http://www.steve-mareigner.fr)",
+  "author": "Steve@Eukles <steve@eukles.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/wollanup/bs/issues"
@@ -23,18 +23,14 @@
     "i18next": "^12.1.0",
     "i18next-browser-languagedetector": "^2.2.4",
     "i18next-xhr-backend": "^1.5.1",
-    "jquery-i18next": "^1.2.1",
-    "shelljs": "^0.8.5"
+    "jquery-i18next": "^1.2.1"
   },
   "devDependencies": {
     "grunt": "^1.1.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-cssmin": "^2.2.1",
     "grunt-contrib-handlebars": "^2.0.0",
-    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-jshint": "^3.2.0",
     "grunt-contrib-uglify": "^3.4.0"
-  },
-  "bin": {
-    "bs-build": "bin/bs-build.js"
   }
 }
