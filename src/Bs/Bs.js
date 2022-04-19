@@ -160,7 +160,7 @@
 			dfds.push(dfdJs);
 
 			// CSS
-			dfdCss = Bs.Stylesheet.load(_config.urlDist + '/' + aPackage + '.min.css');
+			dfdCss = _getCss(_config.urlDist + '/' + aPackage + '.min.css');
 			(function (packageName) {
 				dfdCss.fail(function (jqXHR, errorType, error) {
 					console.error("Error in \"" + packageName + "\" package CSS: " + errorType);
@@ -212,6 +212,31 @@
 		}
 
 		return Bs;
+	};
+
+	/**
+	 * Returns url?_=version
+	 * in order to invalidate cache on version updates
+	 *
+	 * @param url
+	 * @returns {string}
+	 */
+	Bs._getVersionedUrl = function (url) {
+		if (typeof _config.version === 'string' && _config.version !== '') {
+			// Add a version to qparams in order to kick cached pages on Api updates
+
+			if (url.indexOf('?') === -1) {
+				// it will be the first parameter
+				url += '?';
+			}
+			else {
+				// it will be another parameter
+				url += '&';
+			}
+
+			url += '_=' + _config.version;
+		}
+		return url;
 	};
 
 	/**
@@ -571,7 +596,7 @@
 	/**
 	 * Basic configuration of application
 	 *
-	 * @type {{api: string, urlCore: string, urlApp: string, debug: boolean,initLang: boolean}}
+	 * @type {{api: string, urlCore: string, urlApp: string, debug: boolean, initLang: boolean, version: string}}
 	 * @private
 	 */
 	var _config = {
@@ -582,7 +607,8 @@
 		debug   : false,
 		dev     : false,
 		initLang: true,
-		lang    : {}
+		lang    : {},
+		version : ''
 	};
 
 	/**
@@ -649,9 +675,19 @@
 		options = $.extend(options || {}, {
 			dataType: "script",
 			cache   : true,
-			url     : url
+			url     : Bs._getVersionedUrl(url)
 		});
 		return jQuery.ajax(options);
+	};
+
+	/**
+	 *
+	 * @param url
+	 * @returns {*}
+	 * @private
+	 */
+	var _getCss = function (url) {
+		return Bs.Stylesheet.load(Bs._getVersionedUrl(url));
 	};
 
 	/**
