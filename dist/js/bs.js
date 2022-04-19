@@ -1058,7 +1058,7 @@ this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.temp
 			dfds.push(dfdJs);
 
 			// CSS
-			dfdCss = Bs.Stylesheet.load(_config.urlDist + '/' + aPackage + '.min.css');
+			dfdCss = _getCss(_config.urlDist + '/' + aPackage + '.min.css');
 			(function (packageName) {
 				dfdCss.fail(function (jqXHR, errorType, error) {
 					console.error("Error in \"" + packageName + "\" package CSS: " + errorType);
@@ -1110,6 +1110,31 @@ this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.temp
 		}
 
 		return Bs;
+	};
+
+	/**
+	 * Returns url?_=version
+	 * in order to invalidate cache on version updates
+	 *
+	 * @param url
+	 * @returns {string}
+	 */
+	Bs._getVersionedUrl = function (url) {
+		if (typeof _config.version === 'string' && _config.version !== '') {
+			// Add a version to qparams in order to kick cached pages on Api updates
+
+			if (url.indexOf('?') === -1) {
+				// it will be the first parameter
+				url += '?';
+			}
+			else {
+				// it will be another parameter
+				url += '&';
+			}
+
+			url += '_=' + _config.version;
+		}
+		return url;
 	};
 
 	/**
@@ -1469,7 +1494,7 @@ this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.temp
 	/**
 	 * Basic configuration of application
 	 *
-	 * @type {{api: string, urlCore: string, urlApp: string, debug: boolean,initLang: boolean}}
+	 * @type {{api: string, urlCore: string, urlApp: string, debug: boolean, initLang: boolean, version: string}}
 	 * @private
 	 */
 	var _config = {
@@ -1480,7 +1505,8 @@ this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.temp
 		debug   : false,
 		dev     : false,
 		initLang: true,
-		lang    : {}
+		lang    : {},
+		version : ''
 	};
 
 	/**
@@ -1547,9 +1573,19 @@ this["Handlebars"]["templates"]["Bs/View/Modal/tpl/cancelBtn"] = Handlebars.temp
 		options = $.extend(options || {}, {
 			dataType: "script",
 			cache   : true,
-			url     : url
+			url     : Bs._getVersionedUrl(url)
 		});
 		return jQuery.ajax(options);
+	};
+
+	/**
+	 *
+	 * @param url
+	 * @returns {*}
+	 * @private
+	 */
+	var _getCss = function (url) {
+		return Bs.Stylesheet.load(Bs._getVersionedUrl(url));
 	};
 
 	/**
@@ -2701,7 +2737,7 @@ Bs.define('Bs.Template', {
 		Template.load = function (url, tplName, additionalScriptsOnly) {
 			var dfd = new $.Deferred();
 
-			$.get(url)
+			$.get(Bs._getVersionedUrl(url))
 				.done(function (tplHtml) {
 					Handlebars.templates[tplName] = Handlebars.compile(tplHtml);
 					// Bs.Template.registerLoadedTemplate(tplHtml, viewName, additionalScriptsOnly);
@@ -2716,7 +2752,7 @@ Bs.define('Bs.Template', {
 		Template.loadPartial = function (url, tplName, additionalScriptsOnly) {
 			var dfd = new $.Deferred();
 
-			$.get(url)
+			$.get(Bs._getVersionedUrl(url))
 				.done(function (tplHtml) {
 					Handlebars.registerPartial(tplName, tplHtml);
 					dfd.resolve();
