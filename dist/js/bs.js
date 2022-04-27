@@ -6244,15 +6244,22 @@ Bs.define('Bs.View', {
 
             return dfd;
         };
+
         /**
-         * Render View in DOM
+         *
+         * @param renderTo
+         * @param callback Executed before afterRender
+         * @returns {*}
          */
-        View.prototype.render = function (renderTo) {
+        View.prototype.render = function (renderTo, callback) {
             var me = this;
             if (renderTo) {
                 me.renderTo = $(renderTo);
             }
             return _renderer.call(this, me.renderTo).then(function () {
+                if(callback){
+                    callback();
+                }
                 me.trigger('afterRender');
             });
         };
