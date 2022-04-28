@@ -7611,7 +7611,7 @@ Bs.define('Bs.View.Collection', {
         return dfd;
     },
 
-    render: function (callback) {
+    render: function (callbackAfterRenderBaseView, callbackAfterRenderCollection) {
         var me = this, bindDataItems = me.bindData;
 
         me.bindData = false;
@@ -7630,6 +7630,10 @@ Bs.define('Bs.View.Collection', {
             // Determine elEmptyCollection and empty it if exists
             if (!me.data.$elEmptyCollection.length) {
                 me.data.$elEmptyCollection = me.data.$elCollection;
+            }
+
+            if(callbackAfterRenderBaseView) {
+                callbackAfterRenderBaseView();
             }
 
             me.renderCollection().then(function () {
@@ -7658,7 +7662,10 @@ Bs.define('Bs.View.Collection', {
                         return model;
                     };
                 }
-                callback();
+
+                if(callbackAfterRenderCollection) {
+                    callbackAfterRenderCollection();
+                }
             });
         });
     },
