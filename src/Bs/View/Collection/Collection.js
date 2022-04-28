@@ -167,18 +167,12 @@ Bs.define('Bs.View.Collection', {
         return dfd;
     },
 
-    render: function () {
-        var me = this, bindDataItems = me.bindData, dfd = new $.Deferred(), afterRender;
+    render: function (callback) {
+        var me = this, bindDataItems = me.bindData;
 
         me.bindData = false;
 
-        // Store afterRender Code (may be overwritten in subclasses)
-        afterRender = me.afterRender;
-        me.afterRender = function () {
-            // Empty afterRender to prevent code execution by trigger in View.prototype
-        };
-
-        Bs.View.prototype.render.call(me).then(function () {
+        Bs.View.prototype.render.call(me, null, function () {
             me.bindData = bindDataItems;
 
             me.data.$elCollection = me.$el.find('[data-collection]');
@@ -220,11 +214,9 @@ Bs.define('Bs.View.Collection', {
                         return model;
                     };
                 }
-                dfd.resolve();
-                afterRender.call(me);
+                callback();
             });
         });
-        return dfd;
     },
 
     /**

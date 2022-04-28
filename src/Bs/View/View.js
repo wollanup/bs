@@ -768,14 +768,13 @@ Bs.define('Bs.View', {
          *
          * @param renderTo
          * @param callback Executed before afterRender
-         * @returns {*}
          */
         View.prototype.render = function (renderTo, callback) {
             var me = this;
             if (renderTo) {
                 me.renderTo = $(renderTo);
             }
-            return _renderer.call(this, me.renderTo).then(function () {
+            _renderer.call(this, me.renderTo).then(function () {
                 if(callback){
                     callback();
                 }
