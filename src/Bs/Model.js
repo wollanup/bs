@@ -841,7 +841,7 @@ Bs.define('Bs.Model', {
          * @return {string}
          */
         Model.prototype.toJSON = function () {
-            return JSON.stringify(this.toObject());
+            return JSON.prune(this.toObject());
         };
 
         /**
