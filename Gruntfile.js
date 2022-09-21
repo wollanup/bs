@@ -27,6 +27,7 @@ module.exports = function (grunt) {
         concat: {
             js : {
                 src : [
+                    'node_modules/json-prune/JSON.prune.js',
                     'node_modules/handlebars/dist/handlebars.min.js',
                     'node_modules/i18next/dist/umd/i18next.min.js',
                     'node_modules/jquery-i18next/dist/umd/jquery-i18next.js',
