@@ -1,5 +1,1 @@
-# bs
-View/Model JS Application
-
-# Build
-`npm run build`
+Archived. Has moved to a private repo
